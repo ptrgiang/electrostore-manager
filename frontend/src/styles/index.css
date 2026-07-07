@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color: #18202f;
-  background: #eef3f8;
+  color: #0f172a;
+  background: #f3f6fa;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -16,9 +16,7 @@
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 26rem),
-    linear-gradient(180deg, #f4f8fb 0%, #e9eff5 100%);
+  background: #f3f6fa;
 }
 
 button,
@@ -29,20 +27,19 @@ textarea {
 }
 
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-circuit focus:ring-offset-2;
+  @apply focus:outline-none focus:ring-2 focus:ring-circuit/70 focus:ring-offset-2;
 }
 
 .panel {
-  @apply border border-slate-200/80 bg-white shadow-sm;
-  border-radius: 8px;
+  @apply rounded-xl border border-line bg-white shadow-sm;
 }
 
 .control {
-  @apply focus-ring rounded border border-slate-300 bg-white px-3 py-2 text-sm text-ink shadow-sm transition placeholder:text-slate-400 hover:border-slate-400;
+  @apply focus-ring rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-ink shadow-sm transition placeholder:text-slate-400 hover:border-slate-400;
 }
 
 .btn {
-  @apply focus-ring inline-flex items-center justify-center gap-2 rounded px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  @apply focus-ring inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-primary {
@@ -50,11 +47,11 @@ textarea {
 }
 
 .btn-dark {
-  @apply bg-ink text-white shadow-sm hover:bg-slate-800;
+  @apply bg-navy text-white shadow-sm hover:bg-slate-800;
 }
 
 .btn-soft {
-  @apply border border-slate-200 bg-white text-ink hover:bg-slate-50;
+  @apply border border-line bg-white text-ink hover:bg-slate-50;
 }
 
 .btn-danger {
@@ -63,4 +60,24 @@ textarea {
 
 .section-title {
   @apply mb-3 flex items-center justify-between gap-3 text-base font-semibold text-ink;
+}
+
+.field-label {
+  @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-steel;
+}
+
+.segmented {
+  @apply inline-flex rounded-xl border border-line bg-slate-100 p-1;
+}
+
+.segment {
+  @apply rounded-lg px-3 py-1.5 text-sm font-semibold text-steel transition hover:bg-white hover:text-ink;
+}
+
+.segment-active {
+  @apply bg-white text-circuit shadow-sm;
+}
+
+.money {
+  @apply whitespace-nowrap text-right tabular-nums;
 }

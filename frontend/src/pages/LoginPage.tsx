@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LogIn, ShieldCheck } from "lucide-react";
+import { Boxes, LogIn, Receipt, ShieldCheck } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { getAllowedLandingPath } from "../lib/roleAccess";
 
@@ -29,51 +29,79 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center px-4 py-8">
-      <form className="panel w-full max-w-md overflow-hidden" onSubmit={handleSubmit}>
-        <div className="bg-ink px-6 py-6 text-white">
-          <div className="mb-5 inline-flex rounded bg-white/10 p-3 text-teal-100">
-            <ShieldCheck size={24} />
-          </div>
-          <p className="text-xs font-semibold uppercase text-teal-200">ElectroStore Manager</p>
-          <h1 className="mt-2 text-2xl font-semibold">Store Management System</h1>
-          <p className="mt-2 text-sm text-slate-300">Smart POS & Inventory Management for Electronics Stores</p>
-        </div>
-        <div className="space-y-4 p-6">
+    <main className="grid min-h-screen place-items-center bg-panel px-4 py-8">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-line bg-white shadow-xl lg:grid-cols-[1fr_440px]">
+        <section className="hidden bg-navy p-8 text-white lg:flex lg:flex-col lg:justify-between">
           <div>
-            <label className="block text-sm font-medium text-ink" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="control mt-2 w-full"
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
+            <div className="mb-5 inline-flex rounded-xl bg-white/10 p-3 text-teal-100">
+              <ShieldCheck size={26} />
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-teal-200">ElectroStore Manager</p>
+            <h1 className="mt-3 max-w-md text-3xl font-semibold tracking-tight">Operational control for electronics retail teams</h1>
+            <p className="mt-3 max-w-md text-sm leading-6 text-slate-300">POS, inventory, warehouse movement, invoices, reports, and staff visibility in one compact dashboard.</p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-ink" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="control mt-2 w-full"
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
+          <div className="grid gap-3">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] p-4">
+              <div className="flex items-center gap-3 text-sm font-semibold"><Receipt size={18} /> Cashier-ready POS</div>
+              <p className="mt-1 text-xs text-slate-400">Fast cart building, customer lookup, and payment summaries.</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] p-4">
+              <div className="flex items-center gap-3 text-sm font-semibold"><Boxes size={18} /> Inventory operations</div>
+              <p className="mt-1 text-xs text-slate-400">Low-stock alerts, import/export history, and stock visibility.</p>
+            </div>
           </div>
-          {error ? <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div> : null}
-          <button className="btn btn-primary w-full" disabled={isSubmitting}>
-            <LogIn size={18} />
-            {isSubmitting ? "Signing in..." : "Sign in"}
-          </button>
-          <div className="rounded bg-slate-50 p-3 text-xs text-steel">
-            Demo roles: manager, sales, warehouse. Password: <span className="font-semibold text-ink">Password123!</span>
+        </section>
+        <form className="p-6 sm:p-8" onSubmit={handleSubmit}>
+          <div className="lg:hidden">
+            <div className="mb-5 inline-flex rounded-xl bg-teal-50 p-3 text-circuit">
+              <ShieldCheck size={24} />
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-circuit">ElectroStore Manager</p>
           </div>
-        </div>
-      </form>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Sign in</h2>
+          <p className="mt-1 text-sm text-steel">Use a demo account to access the store management workspace.</p>
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="field-label" htmlFor="email">
+                Email
+              </label>
+              <input
+                className="control w-full"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="field-label" htmlFor="password">
+                Password
+              </label>
+              <input
+                className="control w-full"
+                id="password"
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </div>
+            {error ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div> : null}
+            <button className="btn btn-primary w-full py-3" disabled={isSubmitting}>
+              <LogIn size={18} />
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </button>
+            <div className="rounded-xl border border-line bg-slate-50 p-3 text-xs text-steel">
+              <p className="font-semibold text-ink">Demo access</p>
+              <div className="mt-2 grid gap-1.5">
+                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("manager@electrostore.manager")}>manager@electrostore.manager</button>
+                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("sales@electrostore.manager")}>sales@electrostore.manager</button>
+                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("warehouse@electrostore.manager")}>warehouse@electrostore.manager</button>
+              </div>
+              <p className="mt-2">Password: <span className="font-semibold text-ink">Password123!</span></p>
+            </div>
+          </div>
+        </form>
+      </div>
     </main>
   );
 }

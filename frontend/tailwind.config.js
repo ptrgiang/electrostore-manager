@@ -4,11 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#18202f",
-        steel: "#56657a",
+        ink: "#0f172a",
+        navy: "#0b1220",
+        steel: "#64748b",
         circuit: "#0f766e",
         signal: "#f59e0b",
-        panel: "#f7f9fc"
+        panel: "#f6f8fb",
+        line: "#e2e8f0"
       }
     }
   },

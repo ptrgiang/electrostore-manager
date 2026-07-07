@@ -18,7 +18,7 @@ export function EmployeesPage() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-5">
       <PageHeader title="Employees" description="Manager-only roster and role visibility for the MVP." />
       <DataTable<User>
         title="Team Access"
@@ -26,9 +26,9 @@ export function EmployeesPage() {
         empty="No employees found."
         rows={employees.data || []}
         columns={[
-          { key: "name", header: "Name", render: (row) => row.full_name },
-          { key: "email", header: "Email", render: (row) => row.email },
-          { key: "role", header: "Role", render: (row) => <StatusBadge value={row.role} /> }
+          { key: "name", header: "Name", render: (row) => <span className="font-semibold text-ink">{row.full_name}</span>, sortValue: (row) => row.full_name },
+          { key: "email", header: "Email", render: (row) => row.email, sortValue: (row) => row.email },
+          { key: "role", header: "Role", render: (row) => <StatusBadge value={row.role} />, sortValue: (row) => row.role }
         ]}
       />
     </section>

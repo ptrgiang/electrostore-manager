@@ -31,7 +31,7 @@ export function InvoicesPage() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-5">
       <PageHeader title="Invoices" description="Sales invoices, line-item details, and manager refunds." />
       <DataTable<Invoice>
         title="Invoice Register"
@@ -39,12 +39,12 @@ export function InvoicesPage() {
         empty="No invoices yet."
         rows={invoices.data || []}
         columns={[
-          { key: "code", header: "Invoice", render: (row) => row.invoice_code },
-          { key: "customer", header: "Customer", render: (row) => row.customer?.full_name || "Walk-in" },
-          { key: "total", header: "Total", render: (row) => money(row.total_amount) },
-          { key: "payment", header: "Payment", render: (row) => row.payment_method },
-          { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} /> },
-          { key: "created", header: "Created At", render: (row) => new Date(row.created_at).toLocaleString() },
+          { key: "code", header: "Invoice", render: (row) => <span className="font-semibold text-ink">{row.invoice_code}</span>, sortValue: (row) => row.invoice_code },
+          { key: "customer", header: "Customer", render: (row) => row.customer?.full_name || "Walk-in", sortValue: (row) => row.customer?.full_name || "" },
+          { key: "total", header: "Total", align: "right", render: (row) => money(row.total_amount), sortValue: (row) => row.total_amount },
+          { key: "payment", header: "Payment", render: (row) => <span className="capitalize">{row.payment_method}</span>, sortValue: (row) => row.payment_method },
+          { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} />, sortValue: (row) => row.status },
+          { key: "created", header: "Created At", render: (row) => new Date(row.created_at).toLocaleString(), sortValue: (row) => new Date(row.created_at) },
           {
             key: "actions",
             header: "Actions",
@@ -65,13 +65,16 @@ export function InvoicesPage() {
           </div>
           {detail.isLoading ? <p className="mt-2 text-sm text-steel">Loading...</p> : null}
           {detail.data ? (
-            <div className="mt-3 space-y-2 text-sm">
-              <p><strong>{detail.data.invoice_code}</strong> - {money(detail.data.total_amount)}</p>
+            <div className="mt-3 space-y-3 text-sm">
+              <div className="flex items-center justify-between rounded-xl border border-line bg-slate-50 p-3">
+                <strong>{detail.data.invoice_code}</strong>
+                <strong className="tabular-nums text-circuit">{money(detail.data.total_amount)}</strong>
+              </div>
               <ul className="divide-y divide-slate-100">
                 {(detail.data.items || []).map((item) => (
                   <li key={`${item.product_id}-${item.unit_price}`} className="flex justify-between py-2">
                     <span>{item.product?.name || item.product_id} x {item.quantity}</span>
-                    <span>{money(item.unit_price * item.quantity)}</span>
+                    <span className="tabular-nums">{money(item.unit_price * item.quantity)}</span>
                   </li>
                 ))}
               </ul>

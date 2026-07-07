@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, Boxes, PackageCheck, PackageX } from "lucide-react";
 import { inventoryApi } from "../api/resources.api";
 import type { InventoryRow, StockMovement } from "../api/types";
 import { DataTable } from "../components/DataTable";
@@ -34,13 +35,13 @@ export function InventoryPage() {
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-5">
       <PageHeader title="Inventory" description="Current stock, thresholds, low-stock highlights, and movement history." />
-      <div className="grid gap-4 md:grid-cols-4">
-        <MetricCard label="Total Products" value={status.total_products} detail="Tracked SKUs" />
-        <MetricCard label="In Stock" value={status.in_stock} tone="good" detail="Above threshold" />
-        <MetricCard label="Low Stock" value={status.low_stock} tone="warn" detail="Needs review" />
-        <MetricCard label="Out of Stock" value={status.out_of_stock} tone="danger" detail="Blocked for sale" />
+      <div className="grid gap-3 md:grid-cols-4">
+        <MetricCard label="Total Products" value={status.total_products} detail="Tracked SKUs" icon={<Boxes size={18} />} />
+        <MetricCard label="In Stock" value={status.in_stock} tone="good" detail="Above threshold" icon={<PackageCheck size={18} />} />
+        <MetricCard label="Low Stock" value={status.low_stock} tone="warn" detail="Needs review" icon={<AlertTriangle size={18} />} />
+        <MetricCard label="Out of Stock" value={status.out_of_stock} tone="danger" detail="Blocked for sale" icon={<PackageX size={18} />} />
       </div>
       <DataTable<InventoryRow>
         title="Inventory Ledger"
@@ -48,18 +49,18 @@ export function InventoryPage() {
         empty="No inventory rows."
         rows={rows}
         columns={[
-          { key: "sku", header: "SKU", render: (row) => row.sku },
-          { key: "name", header: "Product Name", render: (row) => row.product_name },
-          { key: "category", header: "Category", render: (row) => row.category },
-          { key: "current", header: "Current Qty", render: (row) => <span className={row.status !== "in_stock" ? "font-semibold text-amber-700" : ""}>{row.current_qty}</span> },
-          { key: "min", header: "Min Qty", render: (row) => row.min_qty },
-          { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} /> },
-          { key: "updated", header: "Last Updated", render: (row) => new Date(row.updated_at).toLocaleString() },
+          { key: "sku", header: "SKU", render: (row) => <span className="font-semibold text-ink">{row.sku}</span>, sortValue: (row) => row.sku },
+          { key: "name", header: "Product Name", render: (row) => row.product_name, sortValue: (row) => row.product_name },
+          { key: "category", header: "Category", render: (row) => row.category, sortValue: (row) => row.category },
+          { key: "current", header: "Current Qty", align: "right", render: (row) => <span className={row.status !== "in_stock" ? "font-semibold text-amber-700" : "font-semibold text-ink"}>{row.current_qty}</span>, sortValue: (row) => row.current_qty },
+          { key: "min", header: "Min Qty", align: "right", render: (row) => row.min_qty, sortValue: (row) => row.min_qty },
+          { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} />, sortValue: (row) => row.status },
+          { key: "updated", header: "Last Updated", render: (row) => new Date(row.updated_at).toLocaleString(), sortValue: (row) => new Date(row.updated_at) },
           { key: "actions", header: "Actions", render: (row) => <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(row.product_id)}>Movements</button> }
         ]}
       />
       {selectedProductId ? (
-        <div>
+        <div className="space-y-3">
           <div className="section-title">
             <h2>Movement history</h2>
             <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(null)}>Close</button>
@@ -71,11 +72,11 @@ export function InventoryPage() {
               empty="No stock movements yet."
               rows={movements.data}
               columns={[
-                { key: "code", header: "Code", render: (row) => row.movement_code },
-                { key: "type", header: "Type", render: (row) => <StatusBadge value={row.movement_type} /> },
-                { key: "qty", header: "Qty", render: (row) => row.quantity },
+                { key: "code", header: "Code", render: (row) => <span className="font-semibold text-ink">{row.movement_code}</span>, sortValue: (row) => row.movement_code },
+                { key: "type", header: "Type", render: (row) => <StatusBadge value={row.movement_type} />, sortValue: (row) => row.movement_type },
+                { key: "qty", header: "Qty", align: "right", render: (row) => row.quantity, sortValue: (row) => row.quantity },
                 { key: "reason", header: "Reason", render: (row) => row.reason || row.supplier_name || "-" },
-                { key: "moved", header: "Moved At", render: (row) => new Date(row.moved_at).toLocaleString() }
+                { key: "moved", header: "Moved At", render: (row) => new Date(row.moved_at).toLocaleString(), sortValue: (row) => new Date(row.moved_at) }
               ]}
             />
           ) : null}
