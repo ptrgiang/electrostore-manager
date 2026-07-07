@@ -5,6 +5,7 @@ import { customersApi } from "../api/resources.api";
 import type { Customer } from "../api/types";
 import { DataTable } from "../components/DataTable";
 import { ErrorState, LoadingState } from "../components/PageState";
+import { PageHeader } from "../components/PageHeader";
 
 const emptyCustomer: Partial<Customer> = { full_name: "", phone: "", email: "", address: "" };
 
@@ -32,25 +33,26 @@ export function CustomersPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">Customers</h1>
-          <p className="text-sm text-steel">Profiles, phone lookup, tiers, points, and purchase history.</p>
-        </div>
-        <button className="focus-ring inline-flex items-center gap-2 rounded bg-circuit px-4 py-2 text-sm font-semibold text-white" onClick={() => { setEditing(null); setForm(emptyCustomer); }}>
+      <PageHeader
+        title="Customers"
+        description="Profiles, phone lookup, tiers, points, and purchase history."
+        actions={<button className="btn btn-primary" onClick={() => { setEditing(null); setForm(emptyCustomer); }}>
           <Plus size={16} />
           New customer
-        </button>
-      </div>
+        </button>}
+      />
       <div className="panel relative p-4">
         <Search className="pointer-events-none absolute left-7 top-6 text-steel" size={16} />
-        <input className="focus-ring w-full rounded border border-slate-300 py-2 pl-9 pr-3" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <input className="control w-full pl-9" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
       </div>
       <form className="panel grid gap-3 p-4 md:grid-cols-5" onSubmit={submit}>
-        <input className="focus-ring rounded border border-slate-300 px-3 py-2 md:col-span-2" placeholder="Full name" value={form.full_name || ""} onChange={(event) => setForm({ ...form, full_name: event.target.value })} required />
-        <input className="focus-ring rounded border border-slate-300 px-3 py-2" placeholder="Phone" value={form.phone || ""} onChange={(event) => setForm({ ...form, phone: event.target.value })} required />
-        <input className="focus-ring rounded border border-slate-300 px-3 py-2" type="email" placeholder="Email" value={form.email || ""} onChange={(event) => setForm({ ...form, email: event.target.value })} />
-        <button className="focus-ring inline-flex items-center justify-center gap-2 rounded bg-ink px-4 py-2 font-semibold text-white disabled:opacity-60" disabled={save.isPending}>
+        <div className="md:col-span-5">
+          <h2 className="text-sm font-semibold text-ink">{editing ? "Edit customer" : "Create customer"}</h2>
+        </div>
+        <input className="control md:col-span-2" placeholder="Full name" value={form.full_name || ""} onChange={(event) => setForm({ ...form, full_name: event.target.value })} required />
+        <input className="control" placeholder="Phone" value={form.phone || ""} onChange={(event) => setForm({ ...form, phone: event.target.value })} required />
+        <input className="control" type="email" placeholder="Email" value={form.email || ""} onChange={(event) => setForm({ ...form, email: event.target.value })} />
+        <button className="btn btn-dark" disabled={save.isPending}>
           <Edit size={16} />
           {editing ? "Save" : "Create"}
         </button>
@@ -59,6 +61,8 @@ export function CustomersPage() {
       {query.isError ? <ErrorState label="Could not load customers." onRetry={() => query.refetch()} /> : null}
       {query.data ? (
         <DataTable<Customer>
+          title="Customer Directory"
+          meta={`${query.data.length} profiles`}
           empty="No customers found."
           rows={query.data}
           columns={[
@@ -73,8 +77,8 @@ export function CustomersPage() {
               header: "Actions",
               render: (row) => (
                 <div className="flex gap-2">
-                  <button className="focus-ring rounded border border-slate-200 px-3 py-1 text-sm" onClick={() => { setEditing(row); setForm(row); }}>Edit</button>
-                  <button className="focus-ring rounded border border-slate-200 px-3 py-1 text-sm" onClick={() => setHistoryId(row.id)}>History</button>
+                  <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => { setEditing(row); setForm(row); }}>Edit</button>
+                  <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setHistoryId(row.id)}>History</button>
                 </div>
               )
             }
@@ -83,8 +87,11 @@ export function CustomersPage() {
       ) : null}
       {historyId ? (
         <div className="panel p-4">
-          <h2 className="text-lg font-semibold">Purchase history</h2>
-          <p className="mt-2 text-sm text-steel">{history.isLoading ? "Loading..." : `${history.data?.length || 0} invoices found.`}</p>
+          <div className="section-title">
+            <h2>Purchase history</h2>
+            <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setHistoryId(null)}>Close</button>
+          </div>
+          <p className="text-sm text-steel">{history.isLoading ? "Loading..." : `${history.data?.length || 0} invoices found for the selected customer.`}</p>
         </div>
       ) : null}
     </section>

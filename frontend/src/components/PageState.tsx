@@ -1,5 +1,10 @@
 export function LoadingState({ label = "Loading..." }: { label?: string }) {
-  return <div className="panel p-6 text-sm text-steel">{label}</div>;
+  return (
+    <div className="panel flex items-center gap-3 p-6 text-sm text-steel">
+      <span className="h-2 w-2 animate-pulse rounded-full bg-circuit" />
+      {label}
+    </div>
+  );
 }
 
 export function ErrorState({ label = "Something went wrong.", onRetry }: { label?: string; onRetry?: () => void }) {

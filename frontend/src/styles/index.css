@@ -16,6 +16,9 @@
 body {
   margin: 0;
   min-width: 320px;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 26rem),
+    linear-gradient(180deg, #f4f8fb 0%, #e9eff5 100%);
 }
 
 button,
@@ -30,6 +33,34 @@ textarea {
 }
 
 .panel {
-  @apply border border-slate-200 bg-white shadow-sm;
+  @apply border border-slate-200/80 bg-white shadow-sm;
   border-radius: 8px;
+}
+
+.control {
+  @apply focus-ring rounded border border-slate-300 bg-white px-3 py-2 text-sm text-ink shadow-sm transition placeholder:text-slate-400 hover:border-slate-400;
+}
+
+.btn {
+  @apply focus-ring inline-flex items-center justify-center gap-2 rounded px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.btn-primary {
+  @apply bg-circuit text-white shadow-sm hover:bg-teal-700;
+}
+
+.btn-dark {
+  @apply bg-ink text-white shadow-sm hover:bg-slate-800;
+}
+
+.btn-soft {
+  @apply border border-slate-200 bg-white text-ink hover:bg-slate-50;
+}
+
+.btn-danger {
+  @apply border border-rose-200 bg-white text-rose-700 hover:bg-rose-50;
+}
+
+.section-title {
+  @apply mb-3 flex items-center justify-between gap-3 text-base font-semibold text-ink;
 }

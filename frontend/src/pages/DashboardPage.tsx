@@ -4,6 +4,7 @@ import { MetricCard } from "../components/MetricCard";
 import { DataTable } from "../components/DataTable";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
+import { PageHeader } from "../components/PageHeader";
 import { invoicesApi, reportsApi } from "../api/resources.api";
 import type { Invoice, Product } from "../api/types";
 
@@ -30,25 +31,24 @@ export function DashboardPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-steel">Daily store pulse and exception alerts.</p>
-        </div>
-        <Link className="focus-ring rounded bg-circuit px-4 py-2 text-sm font-semibold text-white" to="/pos">
+      <PageHeader
+        title="Dashboard"
+        description="Daily store pulse, recent sales, and exception alerts."
+        actions={<Link className="btn btn-primary" to="/pos">
           Open POS
-        </Link>
-      </div>
+        </Link>}
+      />
       <div className="grid gap-4 md:grid-cols-4">
-        <MetricCard label="Today Revenue" value={money(revenue.data?.revenue || 0)} tone="good" />
-        <MetricCard label="Today Invoices" value={revenue.data?.invoice_count || 0} />
-        <MetricCard label="Low Stock Products" value={lowStock.data?.length || 0} tone="warn" />
-        <MetricCard label="Top Products" value={topProducts.data?.length || 0} />
+        <MetricCard label="Today Revenue" value={money(revenue.data?.revenue || 0)} tone="good" detail="Completed sales only" />
+        <MetricCard label="Today Invoices" value={revenue.data?.invoice_count || 0} detail="Active production day" />
+        <MetricCard label="Low Stock Products" value={lowStock.data?.length || 0} tone="warn" detail="Needs replenishment" />
+        <MetricCard label="Top Products" value={topProducts.data?.length || 0} detail="Ranked by units sold" />
       </div>
       <div className="grid gap-6 xl:grid-cols-2">
         <div>
-          <h2 className="mb-3 text-lg font-semibold">Recent Sales</h2>
           <DataTable<Invoice>
+            title="Recent Sales"
+            meta={`${recent.length} latest`}
             empty="No invoices yet."
             rows={recent}
             columns={[
@@ -59,8 +59,9 @@ export function DashboardPage() {
           />
         </div>
         <div>
-          <h2 className="mb-3 text-lg font-semibold">Low Stock</h2>
           <DataTable<Product>
+            title="Low Stock"
+            meta={`${lowStock.data?.length || 0} alerts`}
             empty="No low-stock products."
             rows={lowStock.data || []}
             columns={[

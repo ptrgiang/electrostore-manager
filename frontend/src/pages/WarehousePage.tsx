@@ -6,6 +6,7 @@ import type { StockMovement } from "../api/types";
 import { DataTable } from "../components/DataTable";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
+import { PageHeader } from "../components/PageHeader";
 
 export function WarehousePage() {
   const queryClient = useQueryClient();
@@ -44,37 +45,37 @@ export function WarehousePage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Warehouse</h1>
-        <p className="text-sm text-steel">Import stock, export stock, and inspect stock movement history.</p>
-      </div>
+      <PageHeader title="Warehouse" description="Import stock, export stock, and inspect stock movement history." />
       <div className="panel flex gap-2 p-2">
         {(["import", "export", "history"] as const).map((item) => (
-          <button key={item} className={`focus-ring rounded px-4 py-2 text-sm font-semibold capitalize ${tab === item ? "bg-ink text-white" : "text-steel hover:bg-slate-100"}`} onClick={() => setTab(item)}>
+          <button key={item} className={`btn capitalize ${tab === item ? "btn-dark" : "btn-soft"}`} onClick={() => setTab(item)}>
             {item}
           </button>
         ))}
       </div>
       {tab !== "history" ? (
         <form className="panel grid gap-3 p-4 md:grid-cols-3" onSubmit={submit}>
+          <div className="md:col-span-3">
+            <h2 className="text-sm font-semibold text-ink">{tab === "import" ? "Import stock" : "Export stock"}</h2>
+          </div>
           {tab === "import" ? (
-            <input className="focus-ring rounded border border-slate-300 px-3 py-2" placeholder="Supplier name" value={supplierName} onChange={(event) => setSupplierName(event.target.value)} required />
+            <input className="control" placeholder="Supplier name" value={supplierName} onChange={(event) => setSupplierName(event.target.value)} required />
           ) : (
-            <select className="focus-ring rounded border border-slate-300 px-3 py-2" value={reason} onChange={(event) => setReason(event.target.value)}>
+            <select className="control" value={reason} onChange={(event) => setReason(event.target.value)}>
               <option value="return_to_supplier">Return to supplier</option>
               <option value="damage">Damage</option>
               <option value="other">Other</option>
             </select>
           )}
-          <select className="focus-ring rounded border border-slate-300 px-3 py-2" value={productId} onChange={(event) => setProductId(Number(event.target.value))}>
+          <select className="control" value={productId} onChange={(event) => setProductId(Number(event.target.value))}>
             {(products.data || []).map((product) => (
               <option key={product.id} value={product.id}>{product.sku} - {product.name}</option>
             ))}
           </select>
-          <input className="focus-ring rounded border border-slate-300 px-3 py-2" type="number" min={1} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} />
-          {tab === "import" ? <input className="focus-ring rounded border border-slate-300 px-3 py-2" type="number" min={0} placeholder="Unit cost" value={unitPrice} onChange={(event) => setUnitPrice(Number(event.target.value))} /> : null}
-          <input className="focus-ring rounded border border-slate-300 px-3 py-2 md:col-span-2" placeholder="Notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
-          <button className="focus-ring inline-flex items-center justify-center gap-2 rounded bg-circuit px-4 py-2 font-semibold text-white disabled:opacity-60" disabled={importMutation.isPending || exportMutation.isPending}>
+          <input className="control" type="number" min={1} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} />
+          {tab === "import" ? <input className="control" type="number" min={0} placeholder="Unit cost" value={unitPrice} onChange={(event) => setUnitPrice(Number(event.target.value))} /> : null}
+          <input className="control md:col-span-2" placeholder="Notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
+          <button className="btn btn-primary" disabled={importMutation.isPending || exportMutation.isPending}>
             {tab === "import" ? <ArrowDownToLine size={16} /> : <ArrowUpFromLine size={16} />}
             {tab === "import" ? "Confirm Import" : "Confirm Export"}
           </button>
@@ -84,6 +85,8 @@ export function WarehousePage() {
       {tab === "history" ? (
         movements.isLoading ? <LoadingState label="Loading movements..." /> : movements.isError ? <ErrorState label="Could not load movements." /> : (
           <DataTable<StockMovement>
+            title="Movement History"
+            meta={`${movements.data?.length || 0} entries`}
             empty="No stock movements yet."
             rows={movements.data || []}
             columns={[

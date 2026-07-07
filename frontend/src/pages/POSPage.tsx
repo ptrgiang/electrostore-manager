@@ -4,6 +4,7 @@ import { Minus, Plus, Search, ShoppingCart, Trash2 } from "lucide-react";
 import { customersApi, invoicesApi, productsApi } from "../api/resources.api";
 import type { Customer, Product } from "../api/types";
 import { ErrorState, LoadingState } from "../components/PageState";
+import { PageHeader } from "../components/PageHeader";
 
 type CartItem = {
   product: Product;
@@ -92,10 +93,7 @@ export function POSPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">POS</h1>
-        <p className="text-sm text-steel">Search products, build a cart, lookup customers, and checkout.</p>
-      </div>
+      <PageHeader title="POS" description="Search products, build a cart, lookup customers, and checkout." />
       {success ? <div className="panel border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-700">{success}</div> : null}
       {checkout.isError ? <ErrorState label="Checkout failed. Check stock and payment inputs." /> : null}
       <div className="grid gap-5 xl:grid-cols-[1fr_1.2fr_440px]">
@@ -104,15 +102,18 @@ export function POSPage() {
             <label className="text-sm font-medium" htmlFor="product-search">Product search / barcode</label>
             <div className="relative mt-2">
               <Search className="pointer-events-none absolute left-3 top-2.5 text-steel" size={16} />
-              <input id="product-search" className="focus-ring w-full rounded border border-slate-300 py-2 pl-9 pr-3" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Scan SKU or search name" />
+              <input id="product-search" className="control w-full pl-9" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Scan SKU or search name" />
             </div>
           </div>
           <div className="panel p-4">
-            <h2 className="font-semibold">Quick products</h2>
+            <div className="section-title">
+              <h2>Quick products</h2>
+              <span className="rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-steel">{products.data?.length || 0} matches</span>
+            </div>
             {products.isLoading ? <LoadingState label="Loading products..." /> : null}
             <div className="mt-3 grid gap-2">
               {(products.data || []).slice(0, 8).map((product) => (
-                <button key={product.id} className="focus-ring flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-left hover:bg-slate-50 disabled:opacity-50" disabled={!product.is_active || product.stock_qty <= 0} onClick={() => addProduct(product)}>
+                <button key={product.id} className="focus-ring flex items-center justify-between gap-3 rounded border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:border-circuit/40 hover:bg-teal-50/40 disabled:opacity-50" disabled={!product.is_active || product.stock_qty <= 0} onClick={() => addProduct(product)}>
                   <span>
                     <span className="block font-semibold">{product.name}</span>
                     <span className="text-xs text-steel">{product.sku} - Stock {product.stock_qty}</span>
@@ -124,7 +125,10 @@ export function POSPage() {
           </div>
         </div>
         <div className="panel p-4">
-          <h2 className="flex items-center gap-2 font-semibold"><ShoppingCart size={18} /> Cart</h2>
+          <div className="section-title">
+            <h2 className="flex items-center gap-2"><ShoppingCart size={18} /> Cart</h2>
+            <span className="rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-steel">{cart.length} lines</span>
+          </div>
           <div className="mt-3 divide-y divide-slate-100">
             {cart.length === 0 ? <p className="py-8 text-center text-sm text-steel">Cart is empty.</p> : null}
             {cart.map((item) => (
@@ -135,10 +139,10 @@ export function POSPage() {
                   <p className="mt-1 text-sm font-semibold">{money(item.quantity * item.product.selling_price)}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="focus-ring rounded border border-slate-200 p-2" aria-label="Decrease quantity" onClick={() => adjust(item.product.id, -1)}><Minus size={14} /></button>
+                  <button className="btn btn-soft p-2" aria-label="Decrease quantity" onClick={() => adjust(item.product.id, -1)}><Minus size={14} /></button>
                   <span className="w-8 text-center font-semibold">{item.quantity}</span>
-                  <button className="focus-ring rounded border border-slate-200 p-2" aria-label="Increase quantity" onClick={() => adjust(item.product.id, 1)}><Plus size={14} /></button>
-                  <button className="focus-ring rounded border border-rose-200 p-2 text-rose-700" aria-label="Remove item" onClick={() => adjust(item.product.id, -item.quantity)}><Trash2 size={14} /></button>
+                  <button className="btn btn-soft p-2" aria-label="Increase quantity" onClick={() => adjust(item.product.id, 1)}><Plus size={14} /></button>
+                  <button className="btn btn-danger p-2" aria-label="Remove item" onClick={() => adjust(item.product.id, -item.quantity)}><Trash2 size={14} /></button>
                 </div>
               </div>
             ))}
@@ -149,35 +153,35 @@ export function POSPage() {
           <div>
             <label className="text-sm font-medium" htmlFor="phone">Customer phone</label>
             <div className="mt-2 flex gap-2">
-              <input id="phone" className="focus-ring min-w-0 flex-1 rounded border border-slate-300 px-3 py-2" value={phone} onChange={(event) => setPhone(event.target.value)} />
-              <button type="button" className="focus-ring rounded border border-slate-200 px-3 py-2 font-semibold" onClick={() => customerLookup.mutate(phone)}>Find</button>
+              <input id="phone" className="control min-w-0 flex-1" value={phone} onChange={(event) => setPhone(event.target.value)} />
+              <button type="button" className="btn btn-soft" onClick={() => customerLookup.mutate(phone)}>Find</button>
             </div>
             {phone && !customer && customerLookup.isSuccess ? (
-              <button type="button" className="focus-ring mt-2 rounded border border-slate-200 px-3 py-1 text-sm" onClick={() => createCustomer.mutate()}>Create walk-in customer</button>
+              <button type="button" className="btn btn-soft mt-2 px-3 py-1 text-xs" onClick={() => createCustomer.mutate()}>Create walk-in customer</button>
             ) : null}
             {customer ? <p className="mt-2 text-sm text-teal-700">{customer.full_name} - {customer.points} points</p> : null}
           </div>
-          <select className="focus-ring w-full rounded border border-slate-300 px-3 py-2" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
+          <select className="control w-full" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
             <option value="cash">Cash</option>
             <option value="card">Card</option>
             <option value="transfer">Transfer</option>
             <option value="qr">QR</option>
           </select>
           <div className="grid grid-cols-2 gap-2">
-            <select className="focus-ring rounded border border-slate-300 px-3 py-2" value={discountType} onChange={(event) => setDiscountType(event.target.value as "fixed" | "percent")}>
+            <select className="control" value={discountType} onChange={(event) => setDiscountType(event.target.value as "fixed" | "percent")}>
               <option value="fixed">Fixed</option>
               <option value="percent">Percent</option>
             </select>
-            <input className="focus-ring rounded border border-slate-300 px-3 py-2" type="number" min={0} value={discountValue} onChange={(event) => setDiscountValue(Number(event.target.value))} />
+            <input className="control" type="number" min={0} value={discountValue} onChange={(event) => setDiscountValue(Number(event.target.value))} />
           </div>
-          <input className="focus-ring w-full rounded border border-slate-300 px-3 py-2" type="number" min={0} placeholder="Amount received" value={amountReceived} onChange={(event) => setAmountReceived(Number(event.target.value))} />
-          <div className="space-y-2 border-t border-slate-200 pt-3 text-sm">
+          <input className="control w-full" type="number" min={0} placeholder="Amount received" value={amountReceived} onChange={(event) => setAmountReceived(Number(event.target.value))} />
+          <div className="space-y-2 rounded bg-slate-50 p-3 text-sm">
             <div className="flex justify-between"><span>Subtotal</span><strong>{money(subtotal)}</strong></div>
             <div className="flex justify-between"><span>Discount</span><strong>{money(discountAmount)}</strong></div>
             <div className="flex justify-between text-lg"><span>Total</span><strong>{money(total)}</strong></div>
             <div className="flex justify-between"><span>Change</span><strong>{money(change)}</strong></div>
           </div>
-          <button className="focus-ring w-full rounded bg-circuit px-4 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60" disabled={cart.length === 0 || checkout.isPending}>
+          <button className="btn btn-primary w-full py-3" disabled={cart.length === 0 || checkout.isPending}>
             {checkout.isPending ? "Checking out..." : "Checkout"}
           </button>
         </form>

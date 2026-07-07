@@ -6,6 +6,7 @@ import { DataTable } from "../components/DataTable";
 import { MetricCard } from "../components/MetricCard";
 import { ErrorState, LoadingState } from "../components/PageState";
 import type { Product } from "../api/types";
+import { PageHeader } from "../components/PageHeader";
 
 function money(value: number) {
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value || 0);
@@ -21,23 +22,20 @@ export function ReportsPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Reports</h1>
-        <p className="text-sm text-steel">Revenue, product performance, and low-stock exceptions.</p>
-      </div>
+      <PageHeader title="Reports" description="Revenue, product performance, and low-stock exceptions." />
       <div className="panel flex flex-wrap items-center gap-3 p-4">
-        <button className={`focus-ring rounded px-4 py-2 text-sm font-semibold ${tab === "revenue" ? "bg-ink text-white" : "text-steel"}`} onClick={() => setTab("revenue")}>Revenue Report</button>
-        <button className={`focus-ring rounded px-4 py-2 text-sm font-semibold ${tab === "products" ? "bg-ink text-white" : "text-steel"}`} onClick={() => setTab("products")}>Product Performance</button>
-        <input className="focus-ring ml-auto rounded border border-slate-300 px-3 py-2" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
-        <input className="focus-ring rounded border border-slate-300 px-3 py-2" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+        <button className={`btn ${tab === "revenue" ? "btn-dark" : "btn-soft"}`} onClick={() => setTab("revenue")}>Revenue Report</button>
+        <button className={`btn ${tab === "products" ? "btn-dark" : "btn-soft"}`} onClick={() => setTab("products")}>Product Performance</button>
+        <input className="control ml-auto" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+        <input className="control" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
       </div>
       {tab === "revenue" ? (
         revenue.isLoading ? <LoadingState label="Loading revenue report..." /> : revenue.isError ? <ErrorState label="Could not load revenue report." /> : (
           <>
             <div className="grid gap-4 md:grid-cols-3">
-              <MetricCard label="Revenue" value={money(revenue.data?.revenue || 0)} tone="good" />
-              <MetricCard label="Invoice Count" value={revenue.data?.invoice_count || 0} />
-              <MetricCard label="Gross Profit Placeholder" value={money(0)} />
+              <MetricCard label="Revenue" value={money(revenue.data?.revenue || 0)} tone="good" detail="Completed invoices" />
+              <MetricCard label="Invoice Count" value={revenue.data?.invoice_count || 0} detail="Selected range" />
+              <MetricCard label="Gross Profit Placeholder" value={money(0)} detail="Reserved for V1.1 costing" />
             </div>
             <div className="panel h-80 p-4">
               <ResponsiveContainer width="100%" height="100%">
@@ -55,10 +53,11 @@ export function ReportsPage() {
       ) : (
         <div className="grid gap-6 xl:grid-cols-2">
           <div>
-            <h2 className="mb-3 text-lg font-semibold">Top products</h2>
             {topProducts.isLoading ? <LoadingState /> : null}
             {topProducts.data ? (
               <DataTable<{ product_id: number; name: string; total_sold: number; total_revenue: number }>
+                title="Top products"
+                meta={`${topProducts.data.length} ranked`}
                 empty="No product sales in this range."
                 rows={topProducts.data}
                 columns={[
@@ -70,8 +69,9 @@ export function ReportsPage() {
             ) : null}
           </div>
           <div>
-            <h2 className="mb-3 text-lg font-semibold">Low-stock products</h2>
             <DataTable<Product>
+              title="Low-stock products"
+              meta={`${lowStock.data?.length || 0} alerts`}
               empty="No low-stock products."
               rows={lowStock.data || []}
               columns={[

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LogIn } from "lucide-react";
+import { LogIn, ShieldCheck } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
 const roleHome = {
@@ -34,41 +34,50 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-panel px-4">
-      <form className="panel w-full max-w-md p-6" onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <p className="text-xs font-semibold uppercase text-circuit">ElectroStore Manager</p>
-          <h1 className="mt-2 text-2xl font-semibold text-ink">Store Management System</h1>
-          <p className="mt-2 text-sm text-steel">Smart POS & Inventory Management for Electronics Stores</p>
+    <main className="grid min-h-screen place-items-center px-4 py-8">
+      <form className="panel w-full max-w-md overflow-hidden" onSubmit={handleSubmit}>
+        <div className="bg-ink px-6 py-6 text-white">
+          <div className="mb-5 inline-flex rounded bg-white/10 p-3 text-teal-100">
+            <ShieldCheck size={24} />
+          </div>
+          <p className="text-xs font-semibold uppercase text-teal-200">ElectroStore Manager</p>
+          <h1 className="mt-2 text-2xl font-semibold">Store Management System</h1>
+          <p className="mt-2 text-sm text-slate-300">Smart POS & Inventory Management for Electronics Stores</p>
         </div>
-        <label className="block text-sm font-medium text-ink" htmlFor="email">
-          Email
-        </label>
-        <input
-          className="focus-ring mt-2 w-full rounded border border-slate-300 px-3 py-2"
-          id="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-        <label className="mt-4 block text-sm font-medium text-ink" htmlFor="password">
-          Password
-        </label>
-        <input
-          className="focus-ring mt-2 w-full rounded border border-slate-300 px-3 py-2"
-          id="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-        {error ? <div className="mt-4 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div> : null}
-        <button
-          className="focus-ring mt-6 inline-flex w-full items-center justify-center gap-2 rounded bg-circuit px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isSubmitting}
-        >
-          <LogIn size={18} />
-          {isSubmitting ? "Signing in..." : "Sign in"}
-        </button>
+        <div className="space-y-4 p-6">
+          <div>
+            <label className="block text-sm font-medium text-ink" htmlFor="email">
+              Email
+            </label>
+            <input
+              className="control mt-2 w-full"
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-ink" htmlFor="password">
+              Password
+            </label>
+            <input
+              className="control mt-2 w-full"
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
+          {error ? <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div> : null}
+          <button className="btn btn-primary w-full" disabled={isSubmitting}>
+            <LogIn size={18} />
+            {isSubmitting ? "Signing in..." : "Sign in"}
+          </button>
+          <div className="rounded bg-slate-50 p-3 text-xs text-steel">
+            Demo roles: manager, sales, warehouse. Password: <span className="font-semibold text-ink">Password123!</span>
+          </div>
+        </div>
       </form>
     </main>
   );

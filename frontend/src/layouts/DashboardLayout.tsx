@@ -20,13 +20,17 @@ export function DashboardLayout() {
   const items = navItems.filter((item) => user && item.roles.includes(user.role));
 
   return (
-    <div className="min-h-screen bg-panel text-ink lg:flex">
-      <aside className="border-b border-slate-200 bg-ink text-white lg:fixed lg:inset-y-0 lg:w-64 lg:border-b-0">
-        <div className="flex h-16 items-center justify-between px-5 lg:h-20">
-          <div>
-            <div className="text-lg font-semibold">ElectroStore</div>
-            <div className="text-xs text-slate-300">Smart POS & Inventory</div>
+    <div className="min-h-screen text-ink lg:flex">
+      <aside className="border-b border-slate-200 bg-ink text-white shadow-xl lg:fixed lg:inset-y-0 lg:w-72 lg:border-b-0">
+        <div className="flex h-16 items-center justify-between px-5 lg:h-24">
+          <div className="min-w-0">
+            <div className="text-xl font-semibold">ElectroStore</div>
+            <div className="mt-1 text-xs text-slate-300">Smart POS & Inventory</div>
           </div>
+        </div>
+        <div className="mx-3 mb-3 hidden rounded border border-white/10 bg-white/5 px-3 py-3 lg:block">
+          <p className="truncate text-sm font-semibold">{user?.full_name}</p>
+          <p className="mt-1 text-xs capitalize text-slate-300">{user?.role.replace("_", " ")}</p>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:block lg:space-y-1 lg:overflow-visible">
           {items.map((item) => {
@@ -36,8 +40,8 @@ export function DashboardLayout() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex min-w-fit items-center gap-3 rounded px-3 py-2 text-sm font-medium ${
-                    isActive ? "bg-circuit text-white" : "text-slate-200 hover:bg-white/10"
+                  `flex min-w-fit items-center gap-3 rounded px-3 py-2.5 text-sm font-medium transition ${
+                    isActive ? "bg-circuit text-white shadow-sm" : "text-slate-200 hover:bg-white/10 hover:text-white"
                   }`
                 }
               >
@@ -49,18 +53,18 @@ export function DashboardLayout() {
         </nav>
       </aside>
 
-      <main className="min-w-0 flex-1 lg:pl-64">
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur lg:px-8">
+      <main className="min-w-0 flex-1 lg:pl-72">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur lg:px-8">
           <div>
             <p className="text-xs font-medium uppercase text-steel">ElectroStore Manager</p>
-            <p className="text-sm font-semibold">{user?.full_name}</p>
+            <p className="text-sm font-semibold">Store Management System</p>
           </div>
-          <button className="focus-ring inline-flex items-center gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm font-semibold" onClick={logout}>
+          <button className="btn btn-soft" onClick={logout}>
             <LogOut size={16} />
             Sign out
           </button>
         </header>
-        <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
           <Outlet />
         </div>
       </main>

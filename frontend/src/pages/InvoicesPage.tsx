@@ -6,6 +6,7 @@ import { DataTable } from "../components/DataTable";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
 import { useAuth } from "../hooks/useAuth";
+import { PageHeader } from "../components/PageHeader";
 
 function money(value: number) {
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value || 0);
@@ -31,11 +32,10 @@ export function InvoicesPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Invoices</h1>
-        <p className="text-sm text-steel">Sales invoices, details, and manager refunds.</p>
-      </div>
+      <PageHeader title="Invoices" description="Sales invoices, line-item details, and manager refunds." />
       <DataTable<Invoice>
+        title="Invoice Register"
+        meta={`${invoices.data?.length || 0} invoices`}
         empty="No invoices yet."
         rows={invoices.data || []}
         columns={[
@@ -50,8 +50,8 @@ export function InvoicesPage() {
             header: "Actions",
             render: (row) => (
               <div className="flex gap-2">
-                <button className="focus-ring rounded border border-slate-200 px-3 py-1 text-sm" onClick={() => setSelectedId(row.id)}>Detail</button>
-                {user?.role === "manager" && row.status !== "refunded" ? <button className="focus-ring rounded border border-rose-200 px-3 py-1 text-sm text-rose-700" onClick={() => refund.mutate(row.id)}>Refund</button> : null}
+                <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedId(row.id)}>Detail</button>
+                {user?.role === "manager" && row.status !== "refunded" ? <button className="btn btn-danger px-3 py-1 text-xs" onClick={() => refund.mutate(row.id)}>Refund</button> : null}
               </div>
             )
           }
@@ -59,7 +59,10 @@ export function InvoicesPage() {
       />
       {selectedId ? (
         <div className="panel p-4">
-          <h2 className="text-lg font-semibold">Invoice detail</h2>
+          <div className="section-title">
+            <h2>Invoice detail</h2>
+            <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedId(null)}>Close</button>
+          </div>
           {detail.isLoading ? <p className="mt-2 text-sm text-steel">Loading...</p> : null}
           {detail.data ? (
             <div className="mt-3 space-y-2 text-sm">

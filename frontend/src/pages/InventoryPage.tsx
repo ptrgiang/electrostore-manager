@@ -6,6 +6,7 @@ import { DataTable } from "../components/DataTable";
 import { MetricCard } from "../components/MetricCard";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
+import { PageHeader } from "../components/PageHeader";
 
 export function InventoryPage() {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
@@ -34,17 +35,16 @@ export function InventoryPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Inventory</h1>
-        <p className="text-sm text-steel">Current stock, thresholds, low-stock highlights, and movement history.</p>
-      </div>
+      <PageHeader title="Inventory" description="Current stock, thresholds, low-stock highlights, and movement history." />
       <div className="grid gap-4 md:grid-cols-4">
-        <MetricCard label="Total Products" value={status.total_products} />
-        <MetricCard label="In Stock" value={status.in_stock} tone="good" />
-        <MetricCard label="Low Stock" value={status.low_stock} tone="warn" />
-        <MetricCard label="Out of Stock" value={status.out_of_stock} tone="warn" />
+        <MetricCard label="Total Products" value={status.total_products} detail="Tracked SKUs" />
+        <MetricCard label="In Stock" value={status.in_stock} tone="good" detail="Above threshold" />
+        <MetricCard label="Low Stock" value={status.low_stock} tone="warn" detail="Needs review" />
+        <MetricCard label="Out of Stock" value={status.out_of_stock} tone="danger" detail="Blocked for sale" />
       </div>
       <DataTable<InventoryRow>
+        title="Inventory Ledger"
+        meta={`${rows.length} rows`}
         empty="No inventory rows."
         rows={rows}
         columns={[
@@ -55,15 +55,19 @@ export function InventoryPage() {
           { key: "min", header: "Min Qty", render: (row) => row.min_qty },
           { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} /> },
           { key: "updated", header: "Last Updated", render: (row) => new Date(row.updated_at).toLocaleString() },
-          { key: "actions", header: "Actions", render: (row) => <button className="focus-ring rounded border border-slate-200 px-3 py-1 text-sm" onClick={() => setSelectedProductId(row.product_id)}>Movements</button> }
+          { key: "actions", header: "Actions", render: (row) => <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(row.product_id)}>Movements</button> }
         ]}
       />
       {selectedProductId ? (
         <div>
-          <h2 className="mb-3 text-lg font-semibold">Movement history</h2>
+          <div className="section-title">
+            <h2>Movement history</h2>
+            <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(null)}>Close</button>
+          </div>
           {movements.isLoading ? <LoadingState label="Loading movements..." /> : null}
           {movements.data ? (
             <DataTable<StockMovement>
+              meta={`${movements.data.length} entries`}
               empty="No stock movements yet."
               rows={movements.data}
               columns={[

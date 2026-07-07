@@ -3,6 +3,8 @@ import { employeesApi } from "../api/resources.api";
 import type { User } from "../api/types";
 import { DataTable } from "../components/DataTable";
 import { ErrorState, LoadingState } from "../components/PageState";
+import { PageHeader } from "../components/PageHeader";
+import { StatusBadge } from "../components/StatusBadge";
 
 export function EmployeesPage() {
   const employees = useQuery({ queryKey: ["employees"], queryFn: employeesApi.list });
@@ -17,17 +19,16 @@ export function EmployeesPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Employees</h1>
-        <p className="text-sm text-steel">Manager-only roster and role visibility for the MVP.</p>
-      </div>
+      <PageHeader title="Employees" description="Manager-only roster and role visibility for the MVP." />
       <DataTable<User>
+        title="Team Access"
+        meta={`${employees.data?.length || 0} staff`}
         empty="No employees found."
         rows={employees.data || []}
         columns={[
           { key: "name", header: "Name", render: (row) => row.full_name },
           { key: "email", header: "Email", render: (row) => row.email },
-          { key: "role", header: "Role", render: (row) => <span className="capitalize">{row.role.replace("_", " ")}</span> }
+          { key: "role", header: "Role", render: (row) => <StatusBadge value={row.role} /> }
         ]}
       />
     </section>
