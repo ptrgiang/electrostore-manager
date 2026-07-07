@@ -1,0 +1,1028 @@
+## 1. MVP Goal
+
+Build a web-based store management system for a small/medium electronics shop.
+
+The MVP should cover the most important daily operations:
+
+1. Login and role-based access.
+2. Product management.
+3. Customer management.
+4. Inventory tracking.
+5. Import/export stock.
+6. POS sales and invoice creation.
+7. Basic reports: revenue, top products, low-stock alerts.
+
+Leave advanced features such as full supplier purchase order workflow, customer pre-order blocking, PDF/Excel export, and complex promotion rules for V1.1.
+
+---
+
+## 2. Recommended Tech Stack
+
+### Backend
+
+Use the stack from the document:
+
+```txt
+Node.js
+Express.js
+PostgreSQL / Supabase PostgreSQL
+JWT authentication
+bcrypt password hashing
+pg for PostgreSQL connection
+dotenv for environment config
+cors
+zod or joi for validation
+```
+
+### Frontend suggestion
+
+The document focuses on backend, so the frontend should be a clean web admin app that consumes JSON APIs.
+
+Recommended frontend stack:
+
+```txt
+React + Vite
+TypeScript
+Tailwind CSS
+React Router
+TanStack Query or simple Axios services
+Recharts for reports
+```
+
+Why this matches the backend:
+
+```txt
+Express exposes REST APIs.
+React SPA consumes REST APIs.
+JWT is stored on frontend and attached to Authorization header.
+Role-based UI can hide/show pages based on /auth/me response.
+```
+
+---
+
+## 3. MVP Project Structure
+
+```txt
+electronics-store-mvp/
+│
+├── backend/
+│   ├── package.json
+│   ├── .env
+│   ├── src/
+│   │   ├── app.js
+│   │   ├── server.js
+│   │   │
+│   │   ├── config/
+│   │   │   └── db.js
+│   │   │
+│   │   ├── middlewares/
+│   │   │   ├── auth.middleware.js
+│   │   │   ├── role.middleware.js
+│   │   │   └── error.middleware.js
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js
+│   │   │   ├── product.routes.js
+│   │   │   ├── customer.routes.js
+│   │   │   ├── employee.routes.js
+│   │   │   ├── inventory.routes.js
+│   │   │   ├── warehouse.routes.js
+│   │   │   ├── invoice.routes.js
+│   │   │   └── report.routes.js
+│   │   │
+│   │   ├── controllers/
+│   │   │   ├── AuthController.js
+│   │   │   ├── ProductController.js
+│   │   │   ├── CustomerController.js
+│   │   │   ├── EmployeeController.js
+│   │   │   ├── InventoryController.js
+│   │   │   ├── WarehouseController.js
+│   │   │   ├── InvoiceController.js
+│   │   │   └── ReportController.js
+│   │   │
+│   │   ├── services/
+│   │   │   ├── AuthService.js
+│   │   │   ├── ProductService.js
+│   │   │   ├── CustomerService.js
+│   │   │   ├── EmployeeService.js
+│   │   │   ├── InventoryService.js
+│   │   │   ├── WarehouseService.js
+│   │   │   ├── InvoiceService.js
+│   │   │   └── ReportService.js
+│   │   │
+│   │   ├── repositories/
+│   │   │   ├── EmployeeRepository.js
+│   │   │   ├── ProductRepository.js
+│   │   │   ├── CustomerRepository.js
+│   │   │   ├── InventoryRepository.js
+│   │   │   ├── StockMovementRepository.js
+│   │   │   ├── InvoiceRepository.js
+│   │   │   └── ReportRepository.js
+│   │   │
+│   │   └── utils/
+│   │       ├── generateCode.js
+│   │       └── calculateDiscount.js
+│   │
+│   └── database/
+│       ├── schema.sql
+│       └── seed.sql
+│
+└── frontend/
+    ├── package.json
+    ├── src/
+    │   ├── main.tsx
+    │   ├── App.tsx
+    │   │
+    │   ├── api/
+    │   │   ├── client.ts
+    │   │   ├── auth.api.ts
+    │   │   ├── products.api.ts
+    │   │   ├── customers.api.ts
+    │   │   ├── inventory.api.ts
+    │   │   ├── warehouse.api.ts
+    │   │   ├── invoices.api.ts
+    │   │   └── reports.api.ts
+    │   │
+    │   ├── layouts/
+    │   │   └── DashboardLayout.tsx
+    │   │
+    │   ├── pages/
+    │   │   ├── LoginPage.tsx
+    │   │   ├── DashboardPage.tsx
+    │   │   ├── ProductsPage.tsx
+    │   │   ├── CustomersPage.tsx
+    │   │   ├── InventoryPage.tsx
+    │   │   ├── WarehousePage.tsx
+    │   │   ├── POSPage.tsx
+    │   │   ├── InvoicesPage.tsx
+    │   │   └── ReportsPage.tsx
+    │   │
+    │   ├── components/
+    │   │   ├── Sidebar.tsx
+    │   │   ├── DataTable.tsx
+    │   │   ├── ProductForm.tsx
+    │   │   ├── CustomerForm.tsx
+    │   │   ├── POSCart.tsx
+    │   │   ├── ProductSearch.tsx
+    │   │   └── MetricCard.tsx
+    │   │
+    │   └── hooks/
+    │       ├── useAuth.ts
+    │       └── useRoleGuard.ts
+```
+
+---
+
+## 4. MVP Backend APIs
+
+### Auth APIs
+
+```txt
+POST /api/auth/login
+GET  /api/auth/me
+POST /api/auth/logout
+```
+
+Login response:
+
+```json
+{
+  "token": "jwt_token",
+  "user": {
+    "id": 1,
+    "full_name": "Store Manager",
+    "email": "manager@store.com",
+    "role": "manager"
+  }
+}
+```
+
+---
+
+### Product APIs
+
+```txt
+GET    /api/products
+GET    /api/products/:id
+POST   /api/products
+PUT    /api/products/:id
+PATCH  /api/products/:id/stop-selling
+GET    /api/products/low-stock
+```
+
+Frontend pages using these APIs:
+
+```txt
+ProductsPage
+InventoryPage
+POSPage product search
+Warehouse import/export forms
+```
+
+---
+
+### Customer APIs
+
+```txt
+GET    /api/customers
+GET    /api/customers/:id
+POST   /api/customers
+PUT    /api/customers/:id
+GET    /api/customers/:id/history
+GET    /api/customers/search?phone=...
+```
+
+Frontend pages using these APIs:
+
+```txt
+CustomersPage
+POSPage customer lookup
+Invoice detail page
+```
+
+---
+
+### Inventory APIs
+
+```txt
+GET /api/inventory
+GET /api/inventory/:productId
+GET /api/inventory/:productId/movements
+```
+
+Frontend pages using these APIs:
+
+```txt
+InventoryPage
+Product detail drawer
+WarehousePage
+```
+
+---
+
+### Warehouse APIs
+
+```txt
+POST /api/warehouse/import
+POST /api/warehouse/export
+GET  /api/warehouse/movements
+GET  /api/warehouse/movements/:id
+```
+
+Import request:
+
+```json
+{
+  "supplier_name": "ABC Supplier",
+  "employee_id": 1,
+  "items": [
+    {
+      "product_id": 10,
+      "quantity": 20,
+      "unit_price": 1500000
+    }
+  ],
+  "notes": "Initial import"
+}
+```
+
+Export request:
+
+```json
+{
+  "employee_id": 1,
+  "reason": "damage",
+  "items": [
+    {
+      "product_id": 10,
+      "quantity": 2
+    }
+  ],
+  "notes": "Damaged stock"
+}
+```
+
+---
+
+### POS / Invoice APIs
+
+```txt
+POST /api/invoices/sale
+GET  /api/invoices
+GET  /api/invoices/:id
+PATCH /api/invoices/:id/refund
+```
+
+Create sale request:
+
+```json
+{
+  "customer_id": 3,
+  "employee_id": 2,
+  "payment_method": "cash",
+  "discount_type": "fixed",
+  "discount_value": 50000,
+  "amount_received": 2000000,
+  "items": [
+    {
+      "product_id": 10,
+      "quantity": 1,
+      "unit_price": 1800000
+    }
+  ]
+}
+```
+
+Create sale response:
+
+```json
+{
+  "invoice": {
+    "id": 99,
+    "invoice_code": "HD-20260707-001",
+    "subtotal": 1800000,
+    "discount_amount": 50000,
+    "total_amount": 1750000,
+    "change_amount": 250000,
+    "status": "completed"
+  }
+}
+```
+
+---
+
+### Report APIs
+
+```txt
+GET /api/reports/revenue?from=2026-07-01&to=2026-07-07
+GET /api/reports/top-products?from=2026-07-01&to=2026-07-07&limit=10
+GET /api/reports/low-stock
+GET /api/reports/inventory-status
+```
+
+Frontend pages using these APIs:
+
+```txt
+DashboardPage
+ReportsPage
+InventoryPage
+```
+
+---
+
+## 5. Frontend UI Recommendation
+
+Use a simple admin dashboard layout.
+
+### Main layout
+
+```txt
+Left Sidebar
+Top Header
+Main Content Area
+```
+
+Sidebar menu by role:
+
+```txt
+Manager:
+- Dashboard
+- POS
+- Products
+- Customers
+- Inventory
+- Warehouse
+- Invoices
+- Reports
+- Employees
+
+Salesperson:
+- POS
+- Products
+- Customers
+- Inventory
+- Invoices
+
+Warehouse Staff:
+- Products
+- Inventory
+- Warehouse
+```
+
+---
+
+## 6. Page-by-Page MVP UI
+
+### Login Page
+
+Purpose:
+
+```txt
+Authenticate employee.
+Store JWT.
+Redirect based on role.
+```
+
+UI:
+
+```txt
+Email input
+Password input
+Login button
+Error message area
+```
+
+API used:
+
+```txt
+POST /api/auth/login
+```
+
+---
+
+### Dashboard Page
+
+For manager only.
+
+UI blocks:
+
+```txt
+Today Revenue
+Today Invoices
+Low Stock Products
+Top Selling Products
+Recent Sales
+```
+
+APIs used:
+
+```txt
+GET /api/reports/revenue
+GET /api/reports/top-products
+GET /api/reports/low-stock
+GET /api/invoices
+```
+
+---
+
+### Products Page
+
+UI:
+
+```txt
+Search bar
+Category filter
+Product table
+Add product button
+Edit product drawer/modal
+Stop selling button
+Low-stock badge
+```
+
+Table columns:
+
+```txt
+SKU
+Name
+Category
+Selling Price
+Cost Price
+Warranty
+Stock Qty
+Status
+Actions
+```
+
+APIs used:
+
+```txt
+GET /api/products
+POST /api/products
+PUT /api/products/:id
+PATCH /api/products/:id/stop-selling
+```
+
+---
+
+### Customers Page
+
+UI:
+
+```txt
+Search by phone/name
+Customer table
+Add customer modal
+Customer detail drawer
+Purchase history tab
+```
+
+Table columns:
+
+```txt
+Name
+Phone
+Email
+Tier
+Points
+Created At
+Actions
+```
+
+APIs used:
+
+```txt
+GET /api/customers
+POST /api/customers
+PUT /api/customers/:id
+GET /api/customers/:id/history
+```
+
+---
+
+### Inventory Page
+
+UI:
+
+```txt
+Inventory summary cards
+Inventory table
+Low-stock highlight
+View movement history button
+```
+
+Table columns:
+
+```txt
+SKU
+Product Name
+Category
+Current Qty
+Min Qty
+Status
+Last Updated
+Actions
+```
+
+Status badges:
+
+```txt
+In Stock
+Low Stock
+Out of Stock
+```
+
+APIs used:
+
+```txt
+GET /api/inventory
+GET /api/inventory/:productId/movements
+```
+
+---
+
+### Warehouse Page
+
+Use tabs:
+
+```txt
+Tab 1: Import Stock
+Tab 2: Export Stock
+Tab 3: Stock Movement History
+```
+
+Import form:
+
+```txt
+Supplier name
+Product search
+Quantity
+Unit cost
+Notes
+Confirm Import
+```
+
+Export form:
+
+```txt
+Reason: return_to_supplier / damage / other
+Product search
+Quantity
+Notes
+Confirm Export
+```
+
+APIs used:
+
+```txt
+POST /api/warehouse/import
+POST /api/warehouse/export
+GET /api/warehouse/movements
+```
+
+---
+
+### POS Page
+
+This is the most important MVP screen.
+
+Suggested layout:
+
+```txt
+Left side: Product Search / Barcode Input
+Center: Product Results
+Right side: Cart + Customer + Payment
+```
+
+UI sections:
+
+```txt
+Product search input
+Quick product list
+Cart table
+Customer phone lookup
+Payment method selector
+Amount received input
+Subtotal
+Discount
+Total
+Change amount
+Checkout button
+```
+
+Cart columns:
+
+```txt
+Product
+SKU
+Qty
+Unit Price
+Line Total
+Remove
+```
+
+APIs used:
+
+```txt
+GET /api/products?search=...
+GET /api/customers/search?phone=...
+POST /api/customers
+POST /api/invoices/sale
+```
+
+POS frontend flow:
+
+```txt
+1. Staff scans or searches product.
+2. Frontend calls GET /api/products.
+3. Staff adds product to cart.
+4. Frontend checks available stock from product/inventory response.
+5. Staff enters customer phone.
+6. Frontend calls customer search API.
+7. Staff selects payment method.
+8. Staff clicks Checkout.
+9. Frontend sends cart to POST /api/invoices/sale.
+10. Backend creates invoice, invoice_items, stock_movements, and updates inventory.
+11. Frontend shows invoice success modal.
+```
+
+---
+
+### Reports Page
+
+Manager only.
+
+Use two tabs:
+
+```txt
+Revenue Report
+Product Performance
+```
+
+Revenue tab UI:
+
+```txt
+Date range picker
+Revenue cards
+Revenue line/bar chart
+Invoice count
+Gross profit placeholder
+```
+
+Product performance tab UI:
+
+```txt
+Top products table
+Top products chart
+Low-stock products table
+```
+
+APIs used:
+
+```txt
+GET /api/reports/revenue
+GET /api/reports/top-products
+GET /api/reports/low-stock
+```
+
+---
+
+## 7. Backend Wiring Example
+
+### Route → Controller → Service → Repository
+
+Example: create sale.
+
+```js
+// routes/invoice.routes.js
+const express = require("express");
+const router = express.Router();
+const InvoiceController = require("../controllers/InvoiceController");
+const auth = require("../middlewares/auth.middleware");
+const allowRoles = require("../middlewares/role.middleware");
+
+router.post(
+  "/sale",
+  auth,
+  allowRoles("manager", "salesperson"),
+  InvoiceController.createSale
+);
+
+module.exports = router;
+```
+
+```js
+// controllers/InvoiceController.js
+const InvoiceService = require("../services/InvoiceService");
+
+exports.createSale = async (req, res, next) => {
+  try {
+    const result = await InvoiceService.createSale({
+      ...req.body,
+      employee_id: req.user.id
+    });
+
+    res.status(201).json({
+      message: "Sale completed successfully",
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+```js
+// services/InvoiceService.js
+const db = require("../config/db");
+const InvoiceRepository = require("../repositories/InvoiceRepository");
+const InventoryRepository = require("../repositories/InventoryRepository");
+const CustomerRepository = require("../repositories/CustomerRepository");
+const { generateInvoiceCode } = require("../utils/generateCode");
+
+exports.createSale = async (payload) => {
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    if (!payload.items || payload.items.length === 0) {
+      throw new Error("Cart is empty");
+    }
+
+    for (const item of payload.items) {
+      const inventory = await InventoryRepository.findByProductIdForUpdate(
+        client,
+        item.product_id
+      );
+
+      if (!inventory || inventory.quantity < item.quantity) {
+        throw new Error(`Not enough stock for product ID ${item.product_id}`);
+      }
+    }
+
+    const subtotal = payload.items.reduce((sum, item) => {
+      return sum + Number(item.unit_price) * Number(item.quantity);
+    }, 0);
+
+    const discountAmount =
+      payload.discount_type === "percent"
+        ? subtotal * Number(payload.discount_value || 0) / 100
+        : Number(payload.discount_value || 0);
+
+    const totalAmount = subtotal - discountAmount;
+    const pointsEarned = Math.floor(totalAmount / 10000);
+
+    const invoice = await InvoiceRepository.createInvoice(client, {
+      invoice_code: generateInvoiceCode("HD"),
+      transaction_type: "sale",
+      customer_id: payload.customer_id || null,
+      employee_id: payload.employee_id,
+      discount_type: payload.discount_type || null,
+      discount_value: payload.discount_value || 0,
+      subtotal,
+      total_amount: totalAmount,
+      payment_method: payload.payment_method,
+      status: "completed",
+      points_earned: pointsEarned
+    });
+
+    for (const item of payload.items) {
+      await InvoiceRepository.createInvoiceItem(client, {
+        invoice_id: invoice.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: item.unit_price
+      });
+    }
+
+    if (payload.customer_id) {
+      await CustomerRepository.addPoints(client, payload.customer_id, pointsEarned);
+    }
+
+    await client.query("COMMIT");
+
+    return {
+      invoice,
+      subtotal,
+      discount_amount: discountAmount,
+      total_amount: totalAmount,
+      change_amount: Number(payload.amount_received || 0) - totalAmount
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+```
+
+---
+
+## 8. Frontend Wiring Example
+
+### API client
+
+```ts
+// frontend/src/api/client.ts
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+```
+
+### Login API
+
+```ts
+// frontend/src/api/auth.api.ts
+import { api } from "./client";
+
+export async function login(email: string, password: string) {
+  const res = await api.post("/auth/login", { email, password });
+  return res.data.data;
+}
+
+export async function getMe() {
+  const res = await api.get("/auth/me");
+  return res.data.data;
+}
+```
+
+### POS checkout API
+
+```ts
+// frontend/src/api/invoices.api.ts
+import { api } from "./client";
+
+export async function createSale(payload: {
+  customer_id?: number;
+  payment_method: "cash" | "card" | "transfer" | "qr";
+  discount_type?: "percent" | "fixed";
+  discount_value?: number;
+  amount_received?: number;
+  items: {
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+  }[];
+}) {
+  const res = await api.post("/invoices/sale", payload);
+  return res.data.data;
+}
+```
+
+---
+
+## 9. MVP Database Notes
+
+Use the SQL schema from the document as the starting point.
+
+For safer MVP behavior, add these constraints:
+
+```sql
+ALTER TABLE products
+ADD CONSTRAINT chk_product_prices
+CHECK (cost_price >= 0 AND selling_price >= 0);
+
+ALTER TABLE inventory
+ADD CONSTRAINT chk_inventory_non_negative
+CHECK (quantity >= 0);
+
+ALTER TABLE invoices
+ADD CONSTRAINT chk_invoice_amounts
+CHECK (subtotal >= 0 AND total_amount >= 0);
+
+ALTER TABLE products
+ADD CONSTRAINT chk_min_stock_non_negative
+CHECK (min_stock_qty >= 0);
+```
+
+Also, before inserting `invoice_items` for a sale, the backend should lock inventory rows using:
+
+```sql
+SELECT *
+FROM inventory
+WHERE product_id = $1
+FOR UPDATE;
+```
+
+This prevents two cashiers from selling the last unit at the same time.
+
+---
+
+## 10. MVP Development Order
+
+Build in this order:
+
+```txt
+1. Database schema + seed data
+2. Auth + JWT + RBAC
+3. Product CRUD
+4. Customer CRUD
+5. Inventory list + low-stock alerts
+6. Warehouse import/export
+7. POS sale creation
+8. Invoice detail
+9. Dashboard + reports
+10. UI polish and role-based navigation
+```
+
+---
+
+## 11. MVP Acceptance Criteria
+
+The MVP is complete when:
+
+```txt
+A manager can log in and view all modules.
+A salesperson can log in and only use POS, products, customers, inventory, invoices.
+A warehouse staff can log in and use inventory and warehouse import/export.
+A product can be created, edited, searched, and soft-deleted.
+A customer can be created and searched by phone.
+Stock import increases inventory.
+Stock export decreases inventory and blocks export if stock is insufficient.
+POS sale creates invoice and invoice items.
+POS sale automatically decreases inventory.
+Customer points increase after sale.
+Low-stock products are highlighted.
+Manager can view revenue and top product reports.
+Unauthorized users cannot access restricted APIs or pages.
+```
+
+---
+
+## 12. Suggested MVP UI Summary
+
+The best frontend for this MVP is a **React admin dashboard**:
+
+```txt
+Login Page
+Dashboard
+Products
+Customers
+Inventory
+Warehouse
+POS
+Invoices
+Reports
+Employees
+```
+
+The most important screen is **POS**, so design it like this:
+
+```txt
+[Product Search / Barcode]   [Product Results]   [Cart + Payment]
+```
+
+That layout matches real cashier workflow and wires cleanly to the Express backend APIs.

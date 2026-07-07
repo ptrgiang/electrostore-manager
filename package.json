@@ -1,0 +1,16 @@
+{
+  "name": "electrostore-manager",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "test": "npm test -w backend",
+    "build": "npm run build -w frontend"
+  }
+}

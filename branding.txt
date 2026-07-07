@@ -1,0 +1,5 @@
+Name: ElectroStore Manager
+Short name: ElectroStore
+Tagline: Smart POS & Inventory Management for Electronics Stores
+
+Browser title: ElectroStore Manager | Store Management System
