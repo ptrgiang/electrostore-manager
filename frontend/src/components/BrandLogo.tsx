@@ -1,0 +1,35 @@
+type BrandLogoProps = {
+  className?: string;
+};
+
+export function BrandLogo({ className = "h-9 w-9" }: BrandLogoProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      viewBox="0 0 48 48"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="3" y="3" width="42" height="42" rx="13" fill="#0f766e" />
+      <rect x="8.5" y="8.5" width="31" height="31" rx="9.5" stroke="#ccfbf1" strokeWidth="3" />
+      <path
+        d="M15 17.5h11.5c3.6 0 6.5 2.9 6.5 6.5s-2.9 6.5-6.5 6.5H15V17.5Z"
+        stroke="#ffffff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.4"
+      />
+      <path
+        d="M22.5 15.5v17M20 24h10M17.5 21.5h-4M17.5 26.5h-4M34.5 21.5h-4M34.5 26.5h-4"
+        stroke="#99f6e4"
+        strokeLinecap="round"
+        strokeWidth="2.1"
+      />
+      <path
+        d="M24 19.5 20.7 24h4.2L22 30l6.1-7.4h-4.2L24 19.5Z"
+        fill="#ffffff"
+      />
+    </svg>
+  );
+}

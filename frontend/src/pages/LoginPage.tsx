@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Boxes, LogIn, Receipt, ShieldCheck } from "lucide-react";
+import { Boxes, LogIn, Receipt } from "lucide-react";
+import { BrandLogo } from "../components/BrandLogo";
 import { useAuth } from "../hooks/useAuth";
 import { getAllowedLandingPath } from "../lib/roleAccess";
 
@@ -33,8 +34,8 @@ export function LoginPage() {
       <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl border border-line bg-white shadow-xl lg:grid-cols-[1fr_440px]">
         <section className="hidden bg-navy p-8 text-white lg:flex lg:flex-col lg:justify-between">
           <div>
-            <div className="mb-5 inline-flex rounded-xl bg-white/10 p-3 text-teal-100">
-              <ShieldCheck size={26} />
+            <div className="mb-5 inline-flex rounded-xl border border-white/10 bg-white/10 p-2 shadow-sm">
+              <BrandLogo className="h-10 w-10" />
             </div>
             <p className="text-xs font-semibold uppercase tracking-wide text-teal-200">ElectroStore Manager</p>
             <h1 className="mt-3 max-w-md text-3xl font-semibold tracking-tight">Operational control for electronics retail teams</h1>
@@ -53,8 +54,8 @@ export function LoginPage() {
         </section>
         <form className="p-6 sm:p-8" onSubmit={handleSubmit}>
           <div className="lg:hidden">
-            <div className="mb-5 inline-flex rounded-xl bg-teal-50 p-3 text-circuit">
-              <ShieldCheck size={24} />
+            <div className="mb-5 inline-flex rounded-xl border border-line bg-white p-2 shadow-sm">
+              <BrandLogo className="h-10 w-10" />
             </div>
             <p className="text-xs font-semibold uppercase tracking-wide text-circuit">ElectroStore Manager</p>
           </div>

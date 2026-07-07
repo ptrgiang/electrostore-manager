@@ -1,6 +1,7 @@
 import { BarChart3, Boxes, CalendarDays, ClipboardList, LayoutDashboard, LogOut, Menu, Package, PanelLeftClose, PanelLeftOpen, Receipt, ShoppingCart, Truck, Users, type LucideIcon } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useMemo, useState } from "react";
+import { BrandLogo } from "../components/BrandLogo";
 import type { Role } from "../api/types";
 import { useAuth } from "../hooks/useAuth";
 import { routeRoles } from "../lib/roleAccess";
@@ -34,10 +35,12 @@ export function DashboardLayout() {
       <aside className={`flex flex-col border-b border-slate-800 bg-navy text-white shadow-xl transition-all lg:fixed lg:inset-y-0 lg:border-b-0 ${isCollapsed ? "lg:w-20" : "lg:w-72"}`}>
         <div className={`flex h-16 items-center px-4 lg:h-20 ${isCollapsed ? "justify-center" : "justify-start"}`}>
           <div className="flex min-w-0 items-center gap-3">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/10 text-sm font-bold text-white shadow-sm">ES</div>
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/10 shadow-sm">
+              <BrandLogo className="h-8 w-8" />
+            </div>
             {!isCollapsed ? (
               <div className="min-w-0">
-                <div className="truncate text-lg font-semibold tracking-tight">ElectroStore</div>
+                <div className="truncate text-lg font-semibold tracking-tight">ElectroStore Manager</div>
                 <div className="mt-0.5 truncate text-xs text-slate-400">POS & Inventory Ops</div>
               </div>
             ) : null}
