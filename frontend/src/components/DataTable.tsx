@@ -98,7 +98,7 @@ export function DataTable<T>({
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white">
             {visibleRows.map((row, index) => (
-              <tr key={index} className="transition hover:bg-teal-50/40">
+              <tr key={index} className="transition hover:bg-slate-50">
                 {columns.map((column) => (
                   <td key={column.key} className={`px-4 py-3 align-middle text-slate-700 ${column.align === "right" ? "text-right tabular-nums" : column.align === "center" ? "text-center" : ""}`}>
                     {column.render(row)}

@@ -97,7 +97,7 @@ export function POSPage() {
       <PageHeader
         title="POS"
         description="Fast product lookup, cart edits, customer selection, and checkout for daily cashier work."
-        actions={<span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-circuit">{cartQuantity} items in cart</span>}
+        actions={<span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-steel">{cartQuantity} items in cart</span>}
       />
       {success ? <div className="panel border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-700">{success}</div> : null}
       {checkout.isError ? <ErrorState label="Checkout failed. Check stock and payment inputs." /> : null}
@@ -120,13 +120,13 @@ export function POSPage() {
               {(products.data || []).slice(0, 12).map((product) => {
                 const isUnavailable = !product.is_active || product.stock_qty <= 0;
                 return (
-                  <button key={product.id} className="focus-ring rounded-xl border border-line bg-white p-3 text-left shadow-sm transition hover:border-circuit/40 hover:bg-teal-50/40 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70" disabled={isUnavailable} onClick={() => addProduct(product)}>
+                  <button key={product.id} className="focus-ring rounded-xl border border-line bg-white p-3 text-left shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70" disabled={isUnavailable} onClick={() => addProduct(product)}>
                     <span className="flex items-start justify-between gap-3">
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-ink">{product.name}</span>
                         <span className="mt-0.5 block text-xs text-steel">{product.sku}</span>
                       </span>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${product.stock_qty <= 0 ? "bg-rose-50 text-rose-700" : product.stock_qty <= product.min_stock_qty ? "bg-amber-50 text-amber-700" : "bg-teal-50 text-circuit"}`}>
+                      <span className="rounded-full border border-line bg-white px-2 py-0.5 text-xs font-semibold text-steel">
                         {product.stock_qty <= 0 ? "Out" : `${product.stock_qty} left`}
                       </span>
                     </span>
@@ -163,7 +163,7 @@ export function POSPage() {
           </div>
           <div className="mt-3 rounded-xl border border-line bg-slate-50 p-3 text-sm">
             <div className="flex justify-between"><span className="text-steel">Subtotal</span><strong className="tabular-nums">{money(subtotal)}</strong></div>
-            <div className="mt-1 flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-rose-700">-{money(discountAmount)}</strong></div>
+            <div className="mt-1 flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-ink">-{money(discountAmount)}</strong></div>
           </div>
         </div>
         <form className="panel flex min-h-[620px] flex-col p-4" onSubmit={submit}>
@@ -215,14 +215,14 @@ export function POSPage() {
           <div className="mt-auto space-y-3 pt-5">
             <div className="space-y-2 rounded-xl border border-line bg-slate-50 p-4 text-sm">
               <div className="flex justify-between"><span className="text-steel">Subtotal</span><strong className="tabular-nums">{money(subtotal)}</strong></div>
-              <div className="flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-rose-700">-{money(discountAmount)}</strong></div>
+              <div className="flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-ink">-{money(discountAmount)}</strong></div>
               <div className="border-t border-line pt-3">
                 <div className="flex items-center justify-between text-xl">
                   <span className="font-semibold text-ink">Total</span>
-                  <strong className="tabular-nums text-circuit">{money(total)}</strong>
+                  <strong className="tabular-nums text-ink">{money(total)}</strong>
                 </div>
               </div>
-              <div className="flex justify-between"><span className="text-steel">Change</span><strong className={`tabular-nums ${change < 0 ? "text-rose-700" : "text-ink"}`}>{money(Math.max(change, 0))}</strong></div>
+              <div className="flex justify-between"><span className="text-steel">Change</span><strong className="tabular-nums text-ink">{money(Math.max(change, 0))}</strong></div>
             </div>
             <button className="btn btn-primary w-full py-3 text-base" disabled={cart.length === 0 || checkout.isPending}>
               <BadgeDollarSign size={18} />

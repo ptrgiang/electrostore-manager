@@ -52,7 +52,7 @@ export function InventoryPage() {
           { key: "sku", header: "SKU", render: (row) => <span className="font-semibold text-ink">{row.sku}</span>, sortValue: (row) => row.sku },
           { key: "name", header: "Product Name", render: (row) => row.product_name, sortValue: (row) => row.product_name },
           { key: "category", header: "Category", render: (row) => row.category, sortValue: (row) => row.category },
-          { key: "current", header: "Current Qty", align: "right", render: (row) => <span className={row.status !== "in_stock" ? "font-semibold text-amber-700" : "font-semibold text-ink"}>{row.current_qty}</span>, sortValue: (row) => row.current_qty },
+          { key: "current", header: "Current Qty", align: "right", render: (row) => <span className="font-semibold text-ink">{row.current_qty}</span>, sortValue: (row) => row.current_qty },
           { key: "min", header: "Min Qty", align: "right", render: (row) => row.min_qty, sortValue: (row) => row.min_qty },
           { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} />, sortValue: (row) => row.status },
           { key: "updated", header: "Last Updated", render: (row) => new Date(row.updated_at).toLocaleString(), sortValue: (row) => new Date(row.updated_at) },

@@ -155,7 +155,7 @@ export function ReportsPage() {
             columns={[
               { key: "sku", header: "SKU", render: (row) => row.sku, sortValue: (row) => row.sku },
               { key: "name", header: "Product", render: (row) => row.name, sortValue: (row) => row.name },
-              { key: "qty", header: "Qty", align: "right", render: (row) => <span className={row.stock_qty <= 0 ? "font-semibold text-rose-700" : "font-semibold text-amber-700"}>{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
+              { key: "qty", header: "Qty", align: "right", render: (row) => <span className="font-semibold text-ink">{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
               { key: "status", header: "Status", render: (row) => <StatusBadge value={row.stock_qty <= 0 ? "out_of_stock" : "low_stock"} /> }
             ]}
           />

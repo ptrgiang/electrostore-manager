@@ -142,7 +142,7 @@ export function ProductsPage() {
             { key: "selling", header: "Selling Price", align: "right", render: (row) => money(row.selling_price), sortValue: (row) => row.selling_price },
             { key: "cost", header: "Cost Price", align: "right", render: (row) => money(row.cost_price), sortValue: (row) => row.cost_price },
             { key: "warranty", header: "Warranty", align: "right", render: (row) => `${row.warranty_months} mo`, sortValue: (row) => row.warranty_months },
-            { key: "stock", header: "Stock Qty", align: "right", render: (row) => <span className={row.stock_qty <= row.min_stock_qty ? "font-semibold text-amber-700" : "font-semibold text-ink"}>{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
+            { key: "stock", header: "Stock Qty", align: "right", render: (row) => <span className="font-semibold text-ink">{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
             { key: "status", header: "Status", render: (row) => <StatusBadge value={row.is_active ? "active" : "stopped"} />, sortValue: (row) => Number(row.is_active) },
             {
               key: "actions",

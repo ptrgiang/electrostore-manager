@@ -68,7 +68,7 @@ export function InvoicesPage() {
             <div className="mt-3 space-y-3 text-sm">
               <div className="flex items-center justify-between rounded-xl border border-line bg-slate-50 p-3">
                 <strong>{detail.data.invoice_code}</strong>
-                <strong className="tabular-nums text-circuit">{money(detail.data.total_amount)}</strong>
+                <strong className="tabular-nums text-ink">{money(detail.data.total_amount)}</strong>
               </div>
               <ul className="divide-y divide-slate-100">
                 {(detail.data.items || []).map((item) => (
