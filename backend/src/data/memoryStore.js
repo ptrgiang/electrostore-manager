@@ -1,4 +1,4 @@
-const { customers, employees, inventory, products } = require("./seedData");
+const { customers, employees, inventory, invoiceItems, invoices, products, stockMovements } = require("./seedData");
 const { generateCode } = require("../utils/generateCode");
 const { badRequest, notFound } = require("../middlewares/error.middleware");
 const { calculateDiscount } = require("../utils/calculateDiscount");
@@ -21,15 +21,15 @@ class MemoryStore {
     this.customers = clone(customers);
     this.employees = clone(employees);
     this.inventory = clone(inventory);
-    this.stockMovements = [];
-    this.invoices = [];
-    this.invoiceItems = [];
+    this.stockMovements = clone(stockMovements);
+    this.invoices = clone(invoices);
+    this.invoiceItems = clone(invoiceItems);
     this.next = {
       customer: Math.max(...this.customers.map((item) => item.id)) + 1,
       product: Math.max(...this.products.map((item) => item.id)) + 1,
-      invoice: 1,
-      invoiceItem: 1,
-      movement: 1
+      invoice: Math.max(...this.invoices.map((item) => item.id)) + 1,
+      invoiceItem: Math.max(...this.invoiceItems.map((item) => item.id)) + 1,
+      movement: Math.max(...this.stockMovements.map((item) => item.id)) + 1
     };
   }
 
