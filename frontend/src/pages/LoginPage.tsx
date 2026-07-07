@@ -90,12 +90,15 @@ export function LoginPage() {
               <LogIn size={18} />
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
-            <div className="rounded-xl border border-line bg-slate-50 p-3 text-xs text-steel">
-              <p className="font-semibold text-ink">Demo access</p>
+            <div className="rounded-xl border border-line bg-white p-3 text-xs text-steel shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-semibold text-ink">Demo access</p>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-steel">MVP</span>
+              </div>
               <div className="mt-2 grid gap-1.5">
-                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("manager@electrostore.manager")}>manager@electrostore.manager</button>
-                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("sales@electrostore.manager")}>sales@electrostore.manager</button>
-                <button className="text-left hover:text-circuit" type="button" onClick={() => setEmail("warehouse@electrostore.manager")}>warehouse@electrostore.manager</button>
+                <button className="rounded-lg px-2 py-1 text-left hover:bg-slate-50 hover:text-circuit" type="button" onClick={() => setEmail("manager@electrostore.manager")}>manager@electrostore.manager</button>
+                <button className="rounded-lg px-2 py-1 text-left hover:bg-slate-50 hover:text-circuit" type="button" onClick={() => setEmail("sales@electrostore.manager")}>sales@electrostore.manager</button>
+                <button className="rounded-lg px-2 py-1 text-left hover:bg-slate-50 hover:text-circuit" type="button" onClick={() => setEmail("warehouse@electrostore.manager")}>warehouse@electrostore.manager</button>
               </div>
               <p className="mt-2">Password: <span className="font-semibold text-ink">Password123!</span></p>
             </div>

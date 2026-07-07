@@ -154,9 +154,10 @@ export function ProductsPage() {
             {
               key: "actions",
               header: "Actions",
+              align: "right",
               render: (row) =>
                 canManage ? (
-                  <div className="flex gap-2">
+                  <div className="flex justify-end gap-2">
                     <button className="btn btn-soft p-2" aria-label={`Edit ${row.name}`} title="Edit product" onClick={() => openEdit(row)}><Edit size={16} /></button>
                     <button className="btn btn-danger p-2" aria-label={`Stop selling ${row.name}`} title="Stop selling" onClick={() => stopSelling.mutate(row.id)}><StopCircle size={16} /></button>
                   </div>

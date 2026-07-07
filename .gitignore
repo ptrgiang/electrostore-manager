@@ -3,6 +3,8 @@ dist/
 .env
 *.tsbuildinfo
 npm-debug.log*
+.*-dev.log
+.*-dev.*.log
 *.docx
 
 .vercel

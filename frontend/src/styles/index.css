@@ -43,7 +43,7 @@ textarea {
 }
 
 .btn-primary {
-  @apply bg-circuit text-white shadow-sm hover:bg-teal-700;
+  @apply bg-circuit text-white shadow-sm hover:bg-teal-700 disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none disabled:hover:bg-slate-300;
 }
 
 .btn-dark {

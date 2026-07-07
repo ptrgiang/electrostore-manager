@@ -17,6 +17,7 @@ export function InvoicesPage() {
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "refunded">("all");
+  const [paymentFilter, setPaymentFilter] = useState("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const invoices = useQuery({ queryKey: ["invoices"], queryFn: invoicesApi.list });
@@ -29,9 +30,14 @@ export function InvoicesPage() {
     () =>
       (invoices.data || []).filter((invoice) => {
         const date = invoice.created_at.slice(0, 10);
-        return (statusFilter === "all" || invoice.status === statusFilter) && (!from || date >= from) && (!to || date <= to);
+        return (
+          (statusFilter === "all" || invoice.status === statusFilter) &&
+          (paymentFilter === "all" || invoice.payment_method === paymentFilter) &&
+          (!from || date >= from) &&
+          (!to || date <= to)
+        );
       }),
-    [from, invoices.data, statusFilter, to]
+    [from, invoices.data, paymentFilter, statusFilter, to]
   );
 
   if (invoices.isLoading) {
@@ -45,13 +51,32 @@ export function InvoicesPage() {
     <section className="space-y-5">
       <PageHeader title="Invoices" description="Sales invoices, line-item details, and manager refunds." />
       <div className="panel flex flex-wrap items-center gap-3 p-4">
-        <select className="control" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "all" | "completed" | "refunded")}>
-          <option value="all">All status</option>
-          <option value="completed">Completed</option>
-          <option value="refunded">Refunded</option>
-        </select>
-        <input className="control" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
-        <input className="control" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+        <label className="min-w-40">
+          <span className="field-label">Status</span>
+          <select className="control w-full" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "all" | "completed" | "refunded")}>
+            <option value="all">All status</option>
+            <option value="completed">Completed</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </label>
+        <label className="min-w-40">
+          <span className="field-label">Payment</span>
+          <select className="control w-full" value={paymentFilter} onChange={(event) => setPaymentFilter(event.target.value)}>
+            <option value="all">All payments</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="transfer">Transfer</option>
+            <option value="qr">QR</option>
+          </select>
+        </label>
+        <label>
+          <span className="field-label">From</span>
+          <input className="control" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+        </label>
+        <label>
+          <span className="field-label">To</span>
+          <input className="control" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+        </label>
       </div>
       <DataTable<Invoice>
         title="Invoice Register"
@@ -68,8 +93,9 @@ export function InvoicesPage() {
           {
             key: "actions",
             header: "Actions",
+            align: "right",
             render: (row) => (
-              <div className="flex gap-2">
+              <div className="flex justify-end gap-2">
                 <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => setSelectedId(row.id)}>Detail</button>
                 {user?.role === "manager" && row.status !== "refunded" ? <button className="btn btn-danger px-3 py-1.5 text-xs" onClick={() => refund.mutate(row.id)}>Refund</button> : null}
               </div>

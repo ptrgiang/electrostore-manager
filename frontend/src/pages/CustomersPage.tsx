@@ -25,6 +25,7 @@ export function CustomersPage() {
   const query = useQuery({ queryKey: ["customers", search], queryFn: () => customersApi.list({ search }) });
   const history = useQuery({ queryKey: ["customer-history", historyId], queryFn: () => customersApi.history(historyId!), enabled: Boolean(historyId) });
   const selectedCustomer = (query.data || []).find((customer) => customer.id === historyId);
+  const selectedTotal = (history.data || []).reduce((sum, invoice) => sum + invoice.total_amount, 0);
   const save = useMutation({
     mutationFn: () => (editing ? customersApi.update(editing.id, form) : customersApi.create(form)),
     onSuccess: () => {
@@ -70,7 +71,7 @@ export function CustomersPage() {
         <Search className="pointer-events-none absolute left-7 top-6 text-steel" size={16} />
         <input className="control w-full pl-9" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
       </div>
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
         <div className="min-w-0">
           {query.isLoading ? <LoadingState label="Loading customers..." /> : null}
           {query.isError ? <ErrorState label="Could not load customers." onRetry={() => query.refetch()} /> : null}
@@ -81,19 +82,29 @@ export function CustomersPage() {
               empty="No customers found."
               rows={query.data}
               columns={[
-                { key: "name", header: "Name", render: (row) => <span className="font-semibold text-ink">{row.full_name}</span>, sortValue: (row) => row.full_name },
+                {
+                  key: "name",
+                  header: "Name",
+                  render: (row) => (
+                    <div>
+                      <p className="font-semibold text-ink">{row.full_name}</p>
+                      <p className="mt-1 text-xs text-steel">{row.email || "No email"}</p>
+                    </div>
+                  ),
+                  sortValue: (row) => row.full_name
+                },
                 { key: "phone", header: "Phone", render: (row) => row.phone, sortValue: (row) => row.phone },
-                { key: "email", header: "Email", render: (row) => row.email || "-", sortValue: (row) => row.email || "" },
                 { key: "tier", header: "Tier", render: (row) => <span className="capitalize">{row.tier}</span>, sortValue: (row) => row.tier },
                 { key: "points", header: "Points", align: "right", render: (row) => row.points, sortValue: (row) => row.points },
                 { key: "created", header: "Created", render: (row) => new Date(row.created_at).toLocaleDateString(), sortValue: (row) => new Date(row.created_at) },
                 {
                   key: "actions",
                   header: "Actions",
+                  align: "right",
                   render: (row) => (
-                    <div className="flex gap-2">
+                    <div className="flex justify-end gap-1.5">
                       <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => openEdit(row)}>Edit</button>
-                      <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => setHistoryId(row.id)}>History</button>
+                      <button className={`btn px-3 py-1.5 text-xs ${historyId === row.id ? "btn-primary" : "btn-soft"}`} onClick={() => setHistoryId(row.id)}>History</button>
                     </div>
                   )
                 }
@@ -107,17 +118,44 @@ export function CustomersPage() {
             {historyId ? <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => setHistoryId(null)}>Clear</button> : null}
           </div>
           {!historyId ? (
-            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-steel">
-              Select a customer to view invoices, points, and recent purchases.
+            <div className="grid min-h-[260px] place-items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center text-sm text-steel">
+              <div>
+                <p className="font-semibold text-ink">No customer selected</p>
+                <p className="mt-1">Select History to inspect invoices, points, and recent purchases.</p>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-left">
+                  <div className="rounded-xl border border-line bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide">Profiles</p>
+                    <p className="mt-1 text-lg font-semibold tabular-nums text-ink">{query.data?.length || 0}</p>
+                  </div>
+                  <div className="rounded-xl border border-line bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide">Points</p>
+                    <p className="mt-1 text-lg font-semibold tabular-nums text-ink">{(query.data || []).reduce((sum, item) => sum + item.points, 0)}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : null}
           {history.isLoading ? <LoadingState label="Loading history..." /> : null}
           {history.data ? (
             <div className="space-y-2">
               {selectedCustomer ? (
-                <div className="rounded-xl border border-line bg-white p-3 text-sm">
+                <div className="rounded-xl border border-line bg-white p-4 text-sm">
                   <p className="font-semibold text-ink">{selectedCustomer.full_name}</p>
-                  <p className="mt-1 text-xs text-steel">{selectedCustomer.phone} - <span className="capitalize">{selectedCustomer.tier}</span> - {selectedCustomer.points} points</p>
+                  <p className="mt-1 text-xs text-steel">{selectedCustomer.phone}</p>
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-slate-50 p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">Tier</p>
+                      <p className="mt-1 font-semibold capitalize text-ink">{selectedCustomer.tier}</p>
+                    </div>
+                    <div className="rounded-xl bg-slate-50 p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">Points</p>
+                      <p className="mt-1 font-semibold tabular-nums text-ink">{selectedCustomer.points}</p>
+                    </div>
+                    <div className="rounded-xl bg-slate-50 p-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">Spent</p>
+                      <p className="mt-1 font-semibold tabular-nums text-ink">{money(selectedTotal)}</p>
+                    </div>
+                  </div>
                 </div>
               ) : null}
               {history.data.length === 0 ? <p className="text-sm text-steel">No invoices found for the selected customer.</p> : null}

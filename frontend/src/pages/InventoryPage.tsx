@@ -28,7 +28,10 @@ export function InventoryPage() {
   }
 
   const rows = inventory.data || [];
-  const visibleRows = rows.filter((row) => statusFilter === "all" || row.status === statusFilter);
+  const statusRank: Record<InventoryRow["status"], number> = { out_of_stock: 0, low_stock: 1, in_stock: 2 };
+  const visibleRows = rows
+    .filter((row) => statusFilter === "all" || row.status === statusFilter)
+    .sort((a, b) => statusRank[a.status] - statusRank[b.status] || a.current_qty - b.current_qty);
   const status = {
     total_products: rows.length,
     in_stock: rows.filter((row) => row.status === "in_stock").length,
@@ -45,12 +48,15 @@ export function InventoryPage() {
         <MetricCard label="Low Stock" value={status.low_stock} tone="warn" detail="Needs review" icon={<AlertTriangle size={18} />} />
         <MetricCard label="Out of Stock" value={status.out_of_stock} tone="danger" detail="Blocked for sale" icon={<PackageX size={18} />} />
       </div>
-      <div className="panel flex flex-wrap items-center gap-2 p-3">
+      <div className="panel flex flex-wrap items-center gap-3 p-3">
+        <span className="text-xs font-semibold uppercase tracking-wide text-steel">Stock status</span>
+        <div className="segmented">
         {(["all", "in_stock", "low_stock", "out_of_stock"] as const).map((item) => (
           <button key={item} className={`segment ${statusFilter === item ? "segment-active" : ""}`} type="button" onClick={() => setStatusFilter(item)}>
             {item.replace(/_/g, " ")}
           </button>
         ))}
+        </div>
       </div>
       <DataTable<InventoryRow>
         title="Inventory Ledger"
@@ -65,7 +71,7 @@ export function InventoryPage() {
           { key: "min", header: "Min Qty", align: "right", render: (row) => row.min_qty, sortValue: (row) => row.min_qty },
           { key: "status", header: "Status", render: (row) => <StatusBadge value={row.status} />, sortValue: (row) => row.status },
           { key: "updated", header: "Last Updated", render: (row) => new Date(row.updated_at).toLocaleString(), sortValue: (row) => new Date(row.updated_at) },
-          { key: "actions", header: "Actions", render: (row) => <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(row.product_id)}>Movements</button> }
+          { key: "actions", header: "Actions", align: "right", render: (row) => <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedProductId(row.product_id)}>Movements</button> }
         ]}
       />
       {selectedProductId ? (

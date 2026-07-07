@@ -77,7 +77,7 @@ export function DataTable<T>({
           {meta ? <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-steel">{meta}</span> : null}
         </div>
       ) : null}
-      <div className="max-h-[640px] overflow-auto">
+      <div className="max-h-[680px] overflow-auto">
         <table className="min-w-full divide-y divide-line text-left text-sm">
           <thead className="sticky top-0 z-[1] bg-slate-50 text-[11px] uppercase tracking-wide text-steel shadow-[inset_0_-1px_0_#e2e8f0]">
             <tr>
@@ -100,7 +100,7 @@ export function DataTable<T>({
             {visibleRows.map((row, index) => (
               <tr key={index} className="transition hover:bg-slate-50">
                 {columns.map((column) => (
-                  <td key={column.key} className={`px-4 py-3.5 align-middle text-[13.5px] text-slate-700 ${column.align === "right" ? "text-right tabular-nums" : column.align === "center" ? "text-center" : ""}`}>
+                  <td key={column.key} className={`px-4 py-3.5 align-middle text-sm text-slate-700 ${column.align === "right" ? "text-right tabular-nums" : column.align === "center" ? "text-center" : ""}`}>
                     {column.render(row)}
                   </td>
                 ))}

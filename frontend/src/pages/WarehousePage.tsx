@@ -55,7 +55,7 @@ export function WarehousePage() {
     <section className="space-y-5">
       <PageHeader title="Warehouse" description="Import stock, export stock, and inspect stock movement history." />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="segmented">
+        <div className="segmented border bg-white p-1 shadow-sm">
           {(["import", "export", "history"] as const).map((item) => (
             <button key={item} type="button" className={`segment capitalize ${tab === item ? "segment-active" : ""}`} onClick={() => setTab(item)}>
               {item}
@@ -63,14 +63,14 @@ export function WarehousePage() {
           ))}
         </div>
         {selectedProduct ? (
-          <div className="rounded-xl border border-line bg-white px-3 py-2 text-sm text-steel">
-            Selected stock: <span className="font-semibold text-ink">{selectedProduct.stock_qty}</span> units
+          <div className="rounded-xl border border-line bg-white px-3 py-2 text-sm text-steel shadow-sm">
+            Selected stock: <span className="font-semibold tabular-nums text-ink">{selectedProduct.stock_qty}</span> units
           </div>
         ) : null}
       </div>
       <div className="grid gap-5 xl:grid-cols-[minmax(420px,0.85fr)_1fr]">
         {tab !== "history" ? (
-          <form className="panel space-y-4 p-4" onSubmit={submit}>
+          <form className="panel min-w-0 space-y-4 p-5" onSubmit={submit}>
             <div className="section-title">
               <h2 className="flex items-center gap-2">{tab === "import" ? <ArrowDownToLine size={18} /> : <ArrowUpFromLine size={18} />} {tab === "import" ? "Import stock" : "Export stock"}</h2>
             </div>
@@ -99,14 +99,31 @@ export function WarehousePage() {
               {selectedProduct ? <p className="mt-2 text-xs text-steel">Current stock: <span className="font-semibold text-ink">{selectedProduct.stock_qty}</span>. Min threshold: {selectedProduct.min_stock_qty}.</p> : null}
             </div>
             {selectedProduct ? (
-              <div className="rounded-xl border border-line bg-slate-50 p-3 text-sm">
+              <div className="rounded-xl border border-line bg-slate-50 p-4 text-sm">
                 <p className="text-xs font-semibold uppercase tracking-wide text-steel">Selected product</p>
                 <p className="mt-1 font-semibold text-ink">{selectedProduct.name}</p>
-                <div className="mt-3 grid gap-2 text-xs text-steel">
-                  <div className="flex justify-between"><span>Current stock</span><strong className="text-ink">{selectedProduct.stock_qty}</strong></div>
-                  <div className="flex justify-between"><span>{tab === "import" ? "New stock after import" : "Remaining after export"}</span><strong className="text-ink">{projectedStock}</strong></div>
-                  {tab === "import" ? <div className="flex justify-between"><span>Import value</span><strong className="text-ink">{money(quantity * unitPrice)}</strong></div> : null}
+                <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                  <div className="rounded-xl border border-line bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">Current</p>
+                    <p className="mt-1 text-xl font-semibold tabular-nums text-ink">{selectedProduct.stock_qty}</p>
+                  </div>
+                  <div className="rounded-xl border border-line bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">{tab === "import" ? "Import qty" : "Export qty"}</p>
+                    <p className="mt-1 text-xl font-semibold tabular-nums text-ink">{quantity}</p>
+                  </div>
+                  <div className="rounded-xl border border-line bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-steel">After</p>
+                    <p className="mt-1 text-xl font-semibold tabular-nums text-ink">{projectedStock}</p>
+                  </div>
                 </div>
+                {tab === "import" ? (
+                  <div className="mt-3 rounded-xl border border-teal-100 bg-white p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-steel">Import value</span>
+                      <strong className="text-lg tabular-nums text-ink">{money(quantity * unitPrice)}</strong>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
@@ -137,7 +154,7 @@ export function WarehousePage() {
             {importMutation.isError || exportMutation.isError ? <p className="text-sm text-rose-700">Warehouse request failed. Check stock quantity and required fields.</p> : null}
           </form>
         ) : null}
-        <div className={tab === "history" ? "xl:col-span-2" : ""}>
+        <div className={`min-w-0 ${tab === "history" ? "xl:col-span-2" : ""}`}>
           {movements.isLoading ? <LoadingState label="Loading movements..." /> : movements.isError ? <ErrorState label="Could not load movements." /> : (
             <DataTable<StockMovement>
               title={tab === "history" ? "Movement History" : "Recent Movements"}

@@ -93,7 +93,7 @@ export function DashboardPage() {
                     <stop offset="95%" stopColor="#0f766e" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#e2e8f0" vertical={false} />
+                <CartesianGrid stroke="#f1f5f9" vertical={false} />
                 <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })} tick={{ fontSize: 12 }} />
                 <YAxis tickFormatter={(value) => `${Math.round(Number(value) / 1000000)}m`} tick={{ fontSize: 12 }} width={44} />
                 <Tooltip formatter={(value) => money(Number(value))} labelFormatter={(value) => new Date(value).toLocaleDateString()} />
