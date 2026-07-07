@@ -4,3 +4,5 @@ dist/
 *.tsbuildinfo
 npm-debug.log*
 *.docx
+
+.vercel
