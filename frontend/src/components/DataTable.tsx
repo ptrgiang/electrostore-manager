@@ -72,14 +72,14 @@ export function DataTable<T>({
   return (
     <div className="panel overflow-hidden">
       {title || meta ? (
-        <div className="flex items-center justify-between gap-3 border-b border-line bg-white px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-line bg-white px-4 py-3.5">
           {title ? <h2 className="text-sm font-semibold text-ink">{title}</h2> : <span />}
           {meta ? <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-steel">{meta}</span> : null}
         </div>
       ) : null}
       <div className="max-h-[640px] overflow-auto">
         <table className="min-w-full divide-y divide-line text-left text-sm">
-          <thead className="sticky top-0 z-[1] bg-slate-50 text-xs uppercase tracking-wide text-steel shadow-[inset_0_-1px_0_#e2e8f0]">
+          <thead className="sticky top-0 z-[1] bg-slate-50 text-[11px] uppercase tracking-wide text-steel shadow-[inset_0_-1px_0_#e2e8f0]">
             <tr>
               {columns.map((column) => (
                 <th key={column.key} className={`whitespace-nowrap px-4 py-3 font-semibold ${column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : "text-left"}`}>
@@ -100,7 +100,7 @@ export function DataTable<T>({
             {visibleRows.map((row, index) => (
               <tr key={index} className="transition hover:bg-slate-50">
                 {columns.map((column) => (
-                  <td key={column.key} className={`px-4 py-3 align-middle text-slate-700 ${column.align === "right" ? "text-right tabular-nums" : column.align === "center" ? "text-center" : ""}`}>
+                  <td key={column.key} className={`px-4 py-3.5 align-middle text-[13.5px] text-slate-700 ${column.align === "right" ? "text-right tabular-nums" : column.align === "center" ? "text-center" : ""}`}>
                     {column.render(row)}
                   </td>
                 ))}

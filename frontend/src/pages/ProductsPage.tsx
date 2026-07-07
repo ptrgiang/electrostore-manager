@@ -53,6 +53,7 @@ export function ProductsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [status, setStatus] = useState<"all" | "active" | "stopped">("all");
   const [editing, setEditing] = useState<Product | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [form, setForm] = useState<ProductFormState>(emptyForm);
@@ -76,6 +77,7 @@ export function ProductsPage() {
   });
 
   const categories = useMemo(() => [...new Set((query.data || []).map((product) => product.category))], [query.data]);
+  const rows = useMemo(() => (query.data || []).filter((product) => status === "all" || (status === "active" ? product.is_active : !product.is_active)), [query.data, status]);
 
   function openNew() {
     setEditing(null);
@@ -126,15 +128,20 @@ export function ProductsPage() {
             <option key={item} value={item}>{item}</option>
           ))}
         </select>
+        <select className="control" value={status} onChange={(event) => setStatus(event.target.value as "all" | "active" | "stopped")}>
+          <option value="all">All status</option>
+          <option value="active">Active</option>
+          <option value="stopped">Stopped</option>
+        </select>
       </div>
       {query.isLoading ? <LoadingState label="Loading products..." /> : null}
       {query.isError ? <ErrorState label="Could not load products." onRetry={() => query.refetch()} /> : null}
       {query.data ? (
         <DataTable<Product>
           title="Product Catalog"
-          meta={`${query.data.length} items`}
+          meta={`${rows.length} items`}
           empty="No products found."
-          rows={query.data}
+          rows={rows}
           columns={[
             { key: "sku", header: "SKU", render: (row) => <span className="font-semibold text-ink">{row.sku}</span>, sortValue: (row) => row.sku },
             { key: "name", header: "Name", render: (row) => row.name, sortValue: (row) => row.name },
@@ -142,7 +149,7 @@ export function ProductsPage() {
             { key: "selling", header: "Selling Price", align: "right", render: (row) => money(row.selling_price), sortValue: (row) => row.selling_price },
             { key: "cost", header: "Cost Price", align: "right", render: (row) => money(row.cost_price), sortValue: (row) => row.cost_price },
             { key: "warranty", header: "Warranty", align: "right", render: (row) => `${row.warranty_months} mo`, sortValue: (row) => row.warranty_months },
-            { key: "stock", header: "Stock Qty", align: "right", render: (row) => <span className="font-semibold text-ink">{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
+            { key: "stock", header: "Stock Qty", align: "right", render: (row) => <span className={`font-semibold ${row.stock_qty <= 0 ? "text-rose-700" : row.stock_qty <= row.min_stock_qty ? "text-amber-700" : "text-ink"}`}>{row.stock_qty}</span>, sortValue: (row) => row.stock_qty },
             { key: "status", header: "Status", render: (row) => <StatusBadge value={row.is_active ? "active" : "stopped"} />, sortValue: (row) => Number(row.is_active) },
             {
               key: "actions",
@@ -150,8 +157,8 @@ export function ProductsPage() {
               render: (row) =>
                 canManage ? (
                   <div className="flex gap-2">
-                    <button className="btn btn-soft p-2" aria-label={`Edit ${row.name}`} onClick={() => openEdit(row)}><Edit size={16} /></button>
-                    <button className="btn btn-danger p-2" aria-label={`Stop selling ${row.name}`} onClick={() => stopSelling.mutate(row.id)}><StopCircle size={16} /></button>
+                    <button className="btn btn-soft p-2" aria-label={`Edit ${row.name}`} title="Edit product" onClick={() => openEdit(row)}><Edit size={16} /></button>
+                    <button className="btn btn-danger p-2" aria-label={`Stop selling ${row.name}`} title="Stop selling" onClick={() => stopSelling.mutate(row.id)}><StopCircle size={16} /></button>
                   </div>
                 ) : (
                   "-"

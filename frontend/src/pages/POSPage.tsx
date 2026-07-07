@@ -126,11 +126,14 @@ export function POSPage() {
                         <span className="block truncate text-sm font-semibold text-ink">{product.name}</span>
                         <span className="mt-0.5 block text-xs text-steel">{product.sku}</span>
                       </span>
-                      <span className="rounded-full border border-line bg-white px-2 py-0.5 text-xs font-semibold text-steel">
-                        {product.stock_qty <= 0 ? "Out" : `${product.stock_qty} left`}
+                      <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${product.stock_qty <= 0 ? "border-rose-200 bg-rose-50 text-rose-700" : product.stock_qty <= product.min_stock_qty ? "border-amber-200 bg-amber-50 text-amber-700" : "border-line bg-white text-steel"}`}>
+                        {product.stock_qty <= 0 ? "Out of stock" : `${product.stock_qty} left`}
                       </span>
                     </span>
-                    <span className="mt-3 block text-sm font-semibold tabular-nums text-ink">{money(product.selling_price)}</span>
+                    <span className="mt-3 flex items-end justify-between gap-3">
+                      <span className="text-sm font-semibold tabular-nums text-ink">{money(product.selling_price)}</span>
+                      <span className="text-xs text-steel">{product.category}</span>
+                    </span>
                   </button>
                 );
               })}
@@ -144,12 +147,18 @@ export function POSPage() {
             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-steel">{cart.length} lines</span>
           </div>
           <div className="min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto pr-1">
-            {cart.length === 0 ? <EmptyState title="Cart is empty." detail="Scan a barcode or select a product to start a sale." /> : null}
+            {cart.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-center">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-white text-steel shadow-sm"><ShoppingCart size={22} /></div>
+                <p className="mt-4 text-sm font-semibold text-ink">Cart is empty</p>
+                <p className="mt-1 text-xs text-steel">Scan barcode or select a product to start a sale.</p>
+              </div>
+            ) : null}
             {cart.map((item) => (
-              <div key={item.product.id} className="grid grid-cols-[1fr_auto] gap-3 py-3">
+              <div key={item.product.id} className="grid grid-cols-[1fr_auto] gap-3 py-3.5">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-ink">{item.product.name}</p>
-                  <p className="text-xs text-steel">{item.product.sku} - {money(item.product.selling_price)}</p>
+                  <p className="text-xs text-steel">{item.product.sku} - Unit {money(item.product.selling_price)}</p>
                   <p className="mt-1 text-sm font-semibold tabular-nums text-ink">{money(item.quantity * item.product.selling_price)}</p>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -166,7 +175,7 @@ export function POSPage() {
             <div className="mt-1 flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-ink">-{money(discountAmount)}</strong></div>
           </div>
         </div>
-        <form className="panel flex min-h-[620px] flex-col p-4" onSubmit={submit}>
+        <form className="panel sticky top-20 flex max-h-[calc(100vh-6rem)] min-h-[620px] flex-col p-4" onSubmit={submit}>
           <div className="section-title">
             <h2 className="flex items-center gap-2"><CreditCard size={18} /> Customer + Payment</h2>
           </div>
@@ -217,16 +226,17 @@ export function POSPage() {
               <div className="flex justify-between"><span className="text-steel">Subtotal</span><strong className="tabular-nums">{money(subtotal)}</strong></div>
               <div className="flex justify-between"><span className="text-steel">Discount</span><strong className="tabular-nums text-ink">-{money(discountAmount)}</strong></div>
               <div className="border-t border-line pt-3">
-                <div className="flex items-center justify-between text-xl">
+                <div className="flex items-center justify-between">
                   <span className="font-semibold text-ink">Total</span>
-                  <strong className="tabular-nums text-ink">{money(total)}</strong>
+                  <strong className="text-2xl font-semibold tabular-nums text-ink">{money(total)}</strong>
                 </div>
               </div>
+              <div className="flex justify-between"><span className="text-steel">Amount received</span><strong className="tabular-nums text-ink">{money(amountReceived)}</strong></div>
               <div className="flex justify-between"><span className="text-steel">Change</span><strong className="tabular-nums text-ink">{money(Math.max(change, 0))}</strong></div>
             </div>
             <button className="btn btn-primary w-full py-3 text-base" disabled={cart.length === 0 || checkout.isPending}>
               <BadgeDollarSign size={18} />
-              {checkout.isPending ? "Checking out..." : "Checkout"}
+              {checkout.isPending ? "Completing..." : "Complete Sale"}
             </button>
           </div>
         </form>

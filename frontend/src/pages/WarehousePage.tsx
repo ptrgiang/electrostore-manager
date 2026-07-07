@@ -25,6 +25,7 @@ export function WarehousePage() {
   const movements = useQuery({ queryKey: ["warehouse-movements"], queryFn: warehouseApi.movements });
   const selectedProduct = useMemo(() => (products.data || []).find((product) => product.id === productId), [products.data, productId]);
   const recentMovements = (movements.data || []).slice(0, 8);
+  const projectedStock = tab === "import" ? (selectedProduct?.stock_qty || 0) + quantity : Math.max(0, (selectedProduct?.stock_qty || 0) - quantity);
 
   const importMutation = useMutation({
     mutationFn: () => warehouseApi.importStock({ supplier_name: supplierName, notes, items: [{ product_id: productId, quantity, unit_price: unitPrice }] }),
@@ -97,6 +98,17 @@ export function WarehousePage() {
               </select>
               {selectedProduct ? <p className="mt-2 text-xs text-steel">Current stock: <span className="font-semibold text-ink">{selectedProduct.stock_qty}</span>. Min threshold: {selectedProduct.min_stock_qty}.</p> : null}
             </div>
+            {selectedProduct ? (
+              <div className="rounded-xl border border-line bg-slate-50 p-3 text-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-steel">Selected product</p>
+                <p className="mt-1 font-semibold text-ink">{selectedProduct.name}</p>
+                <div className="mt-3 grid gap-2 text-xs text-steel">
+                  <div className="flex justify-between"><span>Current stock</span><strong className="text-ink">{selectedProduct.stock_qty}</strong></div>
+                  <div className="flex justify-between"><span>{tab === "import" ? "New stock after import" : "Remaining after export"}</span><strong className="text-ink">{projectedStock}</strong></div>
+                  {tab === "import" ? <div className="flex justify-between"><span>Import value</span><strong className="text-ink">{money(quantity * unitPrice)}</strong></div> : null}
+                </div>
+              </div>
+            ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="field-label">{tab === "import" ? "Quantity" : "Quantity to export"}</label>
@@ -110,7 +122,7 @@ export function WarehousePage() {
               ) : (
                 <div className="rounded-xl border border-line bg-slate-50 p-3 text-sm">
                   <p className="text-xs font-semibold uppercase tracking-wide text-steel">After export</p>
-                  <p className="mt-1 text-lg font-semibold text-ink">{Math.max(0, (selectedProduct?.stock_qty || 0) - quantity)} units</p>
+                  <p className="mt-1 text-lg font-semibold text-ink">{projectedStock} units</p>
                 </div>
               )}
             </div>
@@ -118,11 +130,6 @@ export function WarehousePage() {
               <label className="field-label">Notes</label>
               <textarea className="control min-h-24 w-full" value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Optional movement note" />
             </div>
-            {tab === "import" && quantity > 0 ? (
-              <div className="rounded-xl border border-line bg-slate-50 p-3 text-sm">
-                Import value: <span className="font-semibold tabular-nums text-ink">{money(quantity * unitPrice)}</span>
-              </div>
-            ) : null}
             <button className="btn btn-primary w-full" disabled={importMutation.isPending || exportMutation.isPending || !selectedProduct}>
               {tab === "import" ? <ArrowDownToLine size={16} /> : <ArrowUpFromLine size={16} />}
               {tab === "import" ? "Confirm Import" : "Confirm Export"}

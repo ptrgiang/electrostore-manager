@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { invoicesApi, reportsApi } from "../api/resources.api";
 import { DataTable } from "../components/DataTable";
 import { MetricCard } from "../components/MetricCard";
-import { ErrorState, LoadingState } from "../components/PageState";
+import { EmptyState, ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
 import type { Invoice, Product } from "../api/types";
 import { PageHeader } from "../components/PageHeader";
@@ -33,6 +33,10 @@ function aggregateSeries(series: Array<{ date: string; revenue: number }>) {
     byDate.set(date, (byDate.get(date) || 0) + item.revenue);
   });
   return [...byDate.entries()].map(([date, revenue]) => ({ date, revenue })).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function displayDate(value: string) {
+  return new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export function ReportsPage() {
@@ -83,18 +87,20 @@ export function ReportsPage() {
               <div className="panel h-80 p-4">
                 <div className="section-title">
                   <h2>Revenue by Day</h2>
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-steel">{from} to {to}</span>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-steel">{displayDate(from)} - {displayDate(to)}</span>
                 </div>
                 <div className="h-[250px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenueSeries} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
-                      <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                      <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })} tick={{ fontSize: 12 }} interval="preserveStartEnd" />
-                      <YAxis tickFormatter={(value) => `${Math.round(Number(value) / 1000000)}m`} tick={{ fontSize: 12 }} width={44} />
-                      <Tooltip formatter={(value) => money(Number(value))} labelFormatter={(value) => new Date(value).toLocaleDateString()} />
-                      <Bar dataKey="revenue" fill="#0f766e" radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {revenueSeries.length === 0 ? <EmptyState title="No revenue data." detail="Try a different date range." /> : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={revenueSeries} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
+                        <CartesianGrid stroke="#edf2f7" vertical={false} />
+                        <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })} tick={{ fontSize: 12 }} interval="preserveStartEnd" />
+                        <YAxis tickFormatter={(value) => `${Math.round(Number(value) / 1000000)}m`} tick={{ fontSize: 12 }} width={44} />
+                        <Tooltip formatter={(value) => money(Number(value))} labelFormatter={(value) => displayDate(String(value))} />
+                        <Bar dataKey="revenue" fill="#0f766e" radius={[6, 6, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </div>
               <DataTable<Invoice>
@@ -125,7 +131,7 @@ export function ReportsPage() {
                   </div>
                   <ResponsiveContainer width="100%" height="82%">
                     <BarChart data={topProducts.data} layout="vertical" margin={{ left: 12, right: 16, top: 8, bottom: 0 }}>
-                      <CartesianGrid stroke="#e2e8f0" horizontal={false} />
+                      <CartesianGrid stroke="#edf2f7" horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 12 }} />
                       <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 12 }} />
                       <Tooltip formatter={(value, name) => [name === "total_revenue" ? money(Number(value)) : value, name === "total_revenue" ? "Revenue" : "Sold"]} />

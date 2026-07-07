@@ -55,16 +55,16 @@ export function DashboardLayout() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `group relative flex min-w-fit items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                    isActive ? "bg-white/10 text-white shadow-sm" : "text-slate-300 hover:bg-white/[0.07] hover:text-white"
+                  `group relative flex min-w-fit items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
+                    isActive ? "bg-circuit/15 font-semibold text-white shadow-sm" : "font-medium text-slate-300 hover:bg-white/[0.07] hover:text-white"
                   }`
                 }
                 title={isCollapsed ? item.label : undefined}
               >
                 {({ isActive }) => (
                   <>
-                    <span className={`absolute left-0 h-5 w-1 rounded-r-full ${isActive ? "bg-circuit" : "bg-transparent"}`} />
-                    <Icon className="shrink-0" size={18} />
+                    <span className={`absolute left-0 h-5 w-[3px] rounded-r-full ${isActive ? "bg-circuit" : "bg-transparent"}`} />
+                    <Icon className={`shrink-0 ${isActive ? "text-teal-200" : ""}`} size={16} />
                     {!isCollapsed ? <span>{item.label}</span> : null}
                   </>
                 )}

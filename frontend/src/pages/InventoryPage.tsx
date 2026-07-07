@@ -11,6 +11,7 @@ import { PageHeader } from "../components/PageHeader";
 
 export function InventoryPage() {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | InventoryRow["status"]>("all");
   const inventory = useQuery({ queryKey: ["inventory"], queryFn: inventoryApi.list });
   const movements = useQuery({
     queryKey: ["inventory-movements", selectedProductId],
@@ -27,6 +28,7 @@ export function InventoryPage() {
   }
 
   const rows = inventory.data || [];
+  const visibleRows = rows.filter((row) => statusFilter === "all" || row.status === statusFilter);
   const status = {
     total_products: rows.length,
     in_stock: rows.filter((row) => row.status === "in_stock").length,
@@ -43,11 +45,18 @@ export function InventoryPage() {
         <MetricCard label="Low Stock" value={status.low_stock} tone="warn" detail="Needs review" icon={<AlertTriangle size={18} />} />
         <MetricCard label="Out of Stock" value={status.out_of_stock} tone="danger" detail="Blocked for sale" icon={<PackageX size={18} />} />
       </div>
+      <div className="panel flex flex-wrap items-center gap-2 p-3">
+        {(["all", "in_stock", "low_stock", "out_of_stock"] as const).map((item) => (
+          <button key={item} className={`segment ${statusFilter === item ? "segment-active" : ""}`} type="button" onClick={() => setStatusFilter(item)}>
+            {item.replace(/_/g, " ")}
+          </button>
+        ))}
+      </div>
       <DataTable<InventoryRow>
         title="Inventory Ledger"
-        meta={`${rows.length} rows`}
+        meta={`${visibleRows.length} rows`}
         empty="No inventory rows."
-        rows={rows}
+        rows={visibleRows}
         columns={[
           { key: "sku", header: "SKU", render: (row) => <span className="font-semibold text-ink">{row.sku}</span>, sortValue: (row) => row.sku },
           { key: "name", header: "Product Name", render: (row) => row.product_name, sortValue: (row) => row.product_name },

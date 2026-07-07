@@ -7,6 +7,7 @@ import { DataTable } from "../components/DataTable";
 import { Drawer } from "../components/Drawer";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { PageHeader } from "../components/PageHeader";
+import { StatusBadge } from "../components/StatusBadge";
 
 const emptyCustomer: Partial<Customer> = { full_name: "", phone: "", email: "", address: "" };
 
@@ -23,6 +24,7 @@ export function CustomersPage() {
   const [historyId, setHistoryId] = useState<number | null>(null);
   const query = useQuery({ queryKey: ["customers", search], queryFn: () => customersApi.list({ search }) });
   const history = useQuery({ queryKey: ["customer-history", historyId], queryFn: () => customersApi.history(historyId!), enabled: Boolean(historyId) });
+  const selectedCustomer = (query.data || []).find((customer) => customer.id === historyId);
   const save = useMutation({
     mutationFn: () => (editing ? customersApi.update(editing.id, form) : customersApi.create(form)),
     onSuccess: () => {
@@ -68,8 +70,8 @@ export function CustomersPage() {
         <Search className="pointer-events-none absolute left-7 top-6 text-steel" size={16} />
         <input className="control w-full pl-9" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
       </div>
-      <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
-        <div>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="min-w-0">
           {query.isLoading ? <LoadingState label="Loading customers..." /> : null}
           {query.isError ? <ErrorState label="Could not load customers." onRetry={() => query.refetch()} /> : null}
           {query.data ? (
@@ -99,15 +101,25 @@ export function CustomersPage() {
             />
           ) : null}
         </div>
-        <aside className="panel p-4">
+        <aside className="panel min-w-0 p-4">
           <div className="section-title">
             <h2>Purchase History</h2>
             {historyId ? <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => setHistoryId(null)}>Clear</button> : null}
           </div>
-          {!historyId ? <p className="text-sm text-steel">Select a customer to inspect recent invoice activity.</p> : null}
+          {!historyId ? (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-steel">
+              Select a customer to view invoices, points, and recent purchases.
+            </div>
+          ) : null}
           {history.isLoading ? <LoadingState label="Loading history..." /> : null}
           {history.data ? (
             <div className="space-y-2">
+              {selectedCustomer ? (
+                <div className="rounded-xl border border-line bg-white p-3 text-sm">
+                  <p className="font-semibold text-ink">{selectedCustomer.full_name}</p>
+                  <p className="mt-1 text-xs text-steel">{selectedCustomer.phone} - <span className="capitalize">{selectedCustomer.tier}</span> - {selectedCustomer.points} points</p>
+                </div>
+              ) : null}
               {history.data.length === 0 ? <p className="text-sm text-steel">No invoices found for the selected customer.</p> : null}
               {history.data.slice(0, 6).map((invoice) => (
                 <div key={invoice.id} className="rounded-xl border border-line bg-slate-50 p-3 text-sm">
@@ -115,7 +127,10 @@ export function CustomersPage() {
                     <span className="font-semibold text-ink">{invoice.invoice_code}</span>
                     <span className="font-semibold tabular-nums">{money(invoice.total_amount)}</span>
                   </div>
-                  <p className="mt-1 text-xs text-steel">{new Date(invoice.created_at).toLocaleString()}</p>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <p className="text-xs text-steel">{new Date(invoice.created_at).toLocaleString()}</p>
+                    <StatusBadge value={invoice.status} />
+                  </div>
                 </div>
               ))}
             </div>

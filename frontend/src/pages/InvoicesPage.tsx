@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { invoicesApi } from "../api/resources.api";
 import type { Invoice } from "../api/types";
@@ -16,12 +16,23 @@ export function InvoicesPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "refunded">("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const invoices = useQuery({ queryKey: ["invoices"], queryFn: invoicesApi.list });
   const detail = useQuery({ queryKey: ["invoice", selectedId], queryFn: () => invoicesApi.get(selectedId!), enabled: Boolean(selectedId) });
   const refund = useMutation({
     mutationFn: invoicesApi.refund,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["invoices"] })
   });
+  const rows = useMemo(
+    () =>
+      (invoices.data || []).filter((invoice) => {
+        const date = invoice.created_at.slice(0, 10);
+        return (statusFilter === "all" || invoice.status === statusFilter) && (!from || date >= from) && (!to || date <= to);
+      }),
+    [from, invoices.data, statusFilter, to]
+  );
 
   if (invoices.isLoading) {
     return <LoadingState label="Loading invoices..." />;
@@ -33,11 +44,20 @@ export function InvoicesPage() {
   return (
     <section className="space-y-5">
       <PageHeader title="Invoices" description="Sales invoices, line-item details, and manager refunds." />
+      <div className="panel flex flex-wrap items-center gap-3 p-4">
+        <select className="control" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "all" | "completed" | "refunded")}>
+          <option value="all">All status</option>
+          <option value="completed">Completed</option>
+          <option value="refunded">Refunded</option>
+        </select>
+        <input className="control" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+        <input className="control" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+      </div>
       <DataTable<Invoice>
         title="Invoice Register"
-        meta={`${invoices.data?.length || 0} invoices`}
+        meta={`${rows.length} invoices`}
         empty="No invoices yet."
-        rows={invoices.data || []}
+        rows={rows}
         columns={[
           { key: "code", header: "Invoice", render: (row) => <span className="font-semibold text-ink">{row.invoice_code}</span>, sortValue: (row) => row.invoice_code },
           { key: "customer", header: "Customer", render: (row) => row.customer?.full_name || "Walk-in", sortValue: (row) => row.customer?.full_name || "" },
@@ -50,8 +70,8 @@ export function InvoicesPage() {
             header: "Actions",
             render: (row) => (
               <div className="flex gap-2">
-                <button className="btn btn-soft px-3 py-1 text-xs" onClick={() => setSelectedId(row.id)}>Detail</button>
-                {user?.role === "manager" && row.status !== "refunded" ? <button className="btn btn-danger px-3 py-1 text-xs" onClick={() => refund.mutate(row.id)}>Refund</button> : null}
+                <button className="btn btn-soft px-3 py-1.5 text-xs" onClick={() => setSelectedId(row.id)}>Detail</button>
+                {user?.role === "manager" && row.status !== "refunded" ? <button className="btn btn-danger px-3 py-1.5 text-xs" onClick={() => refund.mutate(row.id)}>Refund</button> : null}
               </div>
             )
           }
