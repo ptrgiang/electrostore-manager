@@ -11,6 +11,7 @@ import { POSPage } from "./pages/POSPage";
 import { InvoicesPage } from "./pages/InvoicesPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { EmployeesPage } from "./pages/EmployeesPage";
+import { routeRoles } from "./lib/roleAccess";
 
 export function App() {
   return (
@@ -23,15 +24,15 @@ export function App() {
           </RequireAuth>
         }
       >
-        <Route index element={<RequireAuth roles={["manager"]}><DashboardPage /></RequireAuth>} />
-        <Route path="pos" element={<RequireAuth roles={["manager", "salesperson"]}><POSPage /></RequireAuth>} />
-        <Route path="products" element={<RequireAuth roles={["manager", "salesperson", "warehouse_staff"]}><ProductsPage /></RequireAuth>} />
-        <Route path="customers" element={<RequireAuth roles={["manager", "salesperson"]}><CustomersPage /></RequireAuth>} />
-        <Route path="inventory" element={<RequireAuth roles={["manager", "salesperson", "warehouse_staff"]}><InventoryPage /></RequireAuth>} />
-        <Route path="warehouse" element={<RequireAuth roles={["manager", "warehouse_staff"]}><WarehousePage /></RequireAuth>} />
-        <Route path="invoices" element={<RequireAuth roles={["manager", "salesperson"]}><InvoicesPage /></RequireAuth>} />
-        <Route path="reports" element={<RequireAuth roles={["manager"]}><ReportsPage /></RequireAuth>} />
-        <Route path="employees" element={<RequireAuth roles={["manager"]}><EmployeesPage /></RequireAuth>} />
+        <Route index element={<RequireAuth roles={routeRoles.dashboard}><DashboardPage /></RequireAuth>} />
+        <Route path="pos" element={<RequireAuth roles={routeRoles.pos}><POSPage /></RequireAuth>} />
+        <Route path="products" element={<RequireAuth roles={routeRoles.products}><ProductsPage /></RequireAuth>} />
+        <Route path="customers" element={<RequireAuth roles={routeRoles.customers}><CustomersPage /></RequireAuth>} />
+        <Route path="inventory" element={<RequireAuth roles={routeRoles.inventory}><InventoryPage /></RequireAuth>} />
+        <Route path="warehouse" element={<RequireAuth roles={routeRoles.warehouse}><WarehousePage /></RequireAuth>} />
+        <Route path="invoices" element={<RequireAuth roles={routeRoles.invoices}><InvoicesPage /></RequireAuth>} />
+        <Route path="reports" element={<RequireAuth roles={routeRoles.reports}><ReportsPage /></RequireAuth>} />
+        <Route path="employees" element={<RequireAuth roles={routeRoles.employees}><EmployeesPage /></RequireAuth>} />
       </Route>
       <Route path="/unauthorized" element={<div className="grid min-h-screen place-items-center text-sm font-semibold text-rose-700">Unauthorized</div>} />
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -2,12 +2,7 @@ import { FormEvent, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LogIn, ShieldCheck } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-
-const roleHome = {
-  manager: "/",
-  salesperson: "/pos",
-  warehouse_staff: "/inventory"
-} as const;
+import { getAllowedLandingPath } from "../lib/roleAccess";
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -25,7 +20,7 @@ export function LoginPage() {
     try {
       const user = await login(email, password);
       const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
-      navigate(from || roleHome[user.role], { replace: true });
+      navigate(getAllowedLandingPath(user.role, from), { replace: true });
     } catch {
       setError("Email or password is incorrect.");
     } finally {

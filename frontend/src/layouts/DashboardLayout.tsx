@@ -2,17 +2,18 @@ import { BarChart3, Boxes, ClipboardList, LayoutDashboard, LogOut, Package, Rece
 import { NavLink, Outlet } from "react-router-dom";
 import type { Role } from "../api/types";
 import { useAuth } from "../hooks/useAuth";
+import { routeRoles } from "../lib/roleAccess";
 
 const navItems: Array<{ to: string; label: string; icon: LucideIcon; roles: Role[] }> = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, roles: ["manager"] },
-  { to: "/pos", label: "POS", icon: ShoppingCart, roles: ["manager", "salesperson"] },
-  { to: "/products", label: "Products", icon: Package, roles: ["manager", "salesperson", "warehouse_staff"] },
-  { to: "/customers", label: "Customers", icon: Users, roles: ["manager", "salesperson"] },
-  { to: "/inventory", label: "Inventory", icon: Boxes, roles: ["manager", "salesperson", "warehouse_staff"] },
-  { to: "/warehouse", label: "Warehouse", icon: Truck, roles: ["manager", "warehouse_staff"] },
-  { to: "/invoices", label: "Invoices", icon: Receipt, roles: ["manager", "salesperson"] },
-  { to: "/reports", label: "Reports", icon: BarChart3, roles: ["manager"] },
-  { to: "/employees", label: "Employees", icon: ClipboardList, roles: ["manager"] }
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, roles: routeRoles.dashboard },
+  { to: "/pos", label: "POS", icon: ShoppingCart, roles: routeRoles.pos },
+  { to: "/products", label: "Products", icon: Package, roles: routeRoles.products },
+  { to: "/customers", label: "Customers", icon: Users, roles: routeRoles.customers },
+  { to: "/inventory", label: "Inventory", icon: Boxes, roles: routeRoles.inventory },
+  { to: "/warehouse", label: "Warehouse", icon: Truck, roles: routeRoles.warehouse },
+  { to: "/invoices", label: "Invoices", icon: Receipt, roles: routeRoles.invoices },
+  { to: "/reports", label: "Reports", icon: BarChart3, roles: routeRoles.reports },
+  { to: "/employees", label: "Employees", icon: ClipboardList, roles: routeRoles.employees }
 ];
 
 export function DashboardLayout() {
