@@ -8,6 +8,17 @@ import { PageHeader } from "../components/PageHeader";
 import { StatusBadge } from "../components/StatusBadge";
 import { MetricCard } from "../components/MetricCard";
 
+function formatRoleFilter(value: "all" | User["role"]) {
+  if (value === "all") {
+    return "All";
+  }
+  return value
+    .replace(/_/g, " ")
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export function EmployeesPage() {
   const [roleFilter, setRoleFilter] = useState<"all" | User["role"]>("all");
   const employees = useQuery({ queryKey: ["employees"], queryFn: employeesApi.list });
@@ -36,7 +47,7 @@ export function EmployeesPage() {
         <div className="segmented">
           {(["all", "manager", "salesperson", "warehouse_staff"] as const).map((role) => (
             <button key={role} className={`segment ${roleFilter === role ? "segment-active" : ""}`} type="button" onClick={() => setRoleFilter(role)}>
-              {role.replace(/_/g, " ")}
+              {formatRoleFilter(role)}
             </button>
           ))}
         </div>

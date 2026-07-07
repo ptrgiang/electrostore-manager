@@ -69,7 +69,7 @@ export function CustomersPage() {
       />
       <div className="panel relative p-4">
         <Search className="pointer-events-none absolute left-7 top-6 text-steel" size={16} />
-        <input className="control w-full pl-9" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <input className="control w-full !pl-10" placeholder="Search by phone, name, or email" value={search} onChange={(event) => setSearch(event.target.value)} />
       </div>
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_400px]">
         <div className="min-w-0">

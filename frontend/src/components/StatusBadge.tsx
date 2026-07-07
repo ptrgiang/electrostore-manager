@@ -1,5 +1,9 @@
 export function StatusBadge({ value }: { value: string }) {
-  const label = value.replace(/_/g, " ");
+  const label = value
+    .replace(/_/g, " ")
+    .split(" ")
+    .map((word, index) => (word === "of" && index > 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(" ");
   const tone =
     value === "completed" || value === "active" || value === "in_stock" || value === "import"
       ? "border-teal-200 bg-teal-50 text-teal-700"
@@ -9,5 +13,5 @@ export function StatusBadge({ value }: { value: string }) {
           ? "border-rose-200 bg-rose-50 text-rose-700"
           : "border-line bg-white text-slate-700";
 
-  return <span className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold capitalize leading-none ${tone}`}>{label}</span>;
+  return <span className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold leading-none ${tone}`}>{label}</span>;
 }

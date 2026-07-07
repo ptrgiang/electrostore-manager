@@ -9,6 +9,17 @@ import { ErrorState, LoadingState } from "../components/PageState";
 import { StatusBadge } from "../components/StatusBadge";
 import { PageHeader } from "../components/PageHeader";
 
+function formatStatusFilter(value: "all" | InventoryRow["status"]) {
+  if (value === "all") {
+    return "All";
+  }
+  return value
+    .replace(/_/g, " ")
+    .split(" ")
+    .map((word, index) => (word === "of" && index > 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(" ");
+}
+
 export function InventoryPage() {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | InventoryRow["status"]>("all");
@@ -53,7 +64,7 @@ export function InventoryPage() {
         <div className="segmented">
         {(["all", "in_stock", "low_stock", "out_of_stock"] as const).map((item) => (
           <button key={item} className={`segment ${statusFilter === item ? "segment-active" : ""}`} type="button" onClick={() => setStatusFilter(item)}>
-            {item.replace(/_/g, " ")}
+            {formatStatusFilter(item)}
           </button>
         ))}
         </div>

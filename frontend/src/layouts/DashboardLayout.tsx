@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, CalendarDays, ClipboardList, LayoutDashboard, LogOut, Menu, Package, PanelLeftClose, PanelLeftOpen, Receipt, Search, ShoppingCart, Truck, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, Boxes, CalendarDays, ClipboardList, LayoutDashboard, LogOut, Menu, Package, PanelLeftClose, PanelLeftOpen, Receipt, ShoppingCart, Truck, Users, type LucideIcon } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useMemo, useState } from "react";
 import type { Role } from "../api/types";
@@ -89,10 +89,6 @@ export function DashboardLayout() {
                 <p className="truncate text-xs font-semibold uppercase tracking-wide text-steel">ElectroStore Manager / {currentItem.label}</p>
                 <p className="truncate text-sm font-semibold text-ink">Store Management System</p>
               </div>
-            </div>
-            <div className="hidden min-w-[260px] max-w-md flex-1 items-center rounded-xl border border-line bg-slate-50 px-3 py-2 text-sm text-steel xl:flex">
-              <Search size={16} className="mr-2 shrink-0" />
-              Search products, invoices, customers
             </div>
             <div className="flex items-center gap-2">
               <div className="hidden items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 text-xs font-semibold text-steel md:flex">

@@ -120,7 +120,7 @@ export function ProductsPage() {
       <div className="panel flex flex-wrap gap-3 p-4">
         <div className="relative min-w-64 flex-1">
           <Search className="pointer-events-none absolute left-3 top-2.5 text-steel" size={16} />
-          <input className="control w-full pl-9" placeholder="Search SKU, name, category" value={search} onChange={(event) => setSearch(event.target.value)} />
+          <input className="control w-full !pl-10" placeholder="Search SKU, name, category" value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <select className="control" value={category} onChange={(event) => setCategory(event.target.value)}>
           <option value="">All categories</option>

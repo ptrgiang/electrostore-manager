@@ -107,7 +107,7 @@ export function POSPage() {
             <label className="field-label" htmlFor="product-search">Product search / barcode</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-2.5 text-steel" size={16} />
-              <input id="product-search" className="control w-full pl-9" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Scan SKU or search name" />
+              <input id="product-search" className="control w-full !pl-10" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Scan SKU or search name" />
             </div>
           </div>
           <div className="panel flex min-h-[520px] flex-col p-4">
