@@ -19,7 +19,7 @@ test.beforeEach(() => {
 test("employees can log in and receive their role", async () => {
   const response = await request(app)
     .post("/api/auth/login")
-    .send({ email: "manager@electrostore.local", password: "Password123!" })
+    .send({ email: "manager@electrostore.manager", password: "Password123!" })
     .expect(200);
 
   assert.equal(response.body.data.user.role, "manager");
@@ -27,13 +27,13 @@ test("employees can log in and receive their role", async () => {
 });
 
 test("RBAC blocks restricted manager report APIs from warehouse staff", async () => {
-  const token = await login("warehouse@electrostore.local");
+  const token = await login("warehouse@electrostore.manager");
 
   await request(app).get("/api/reports/revenue").set("Authorization", `Bearer ${token}`).expect(403);
 });
 
 test("manager can create, search, edit, and stop selling a product", async () => {
-  const token = await login("manager@electrostore.local");
+  const token = await login("manager@electrostore.manager");
 
   const created = await request(app)
     .post("/api/products")
@@ -66,7 +66,7 @@ test("manager can create, search, edit, and stop selling a product", async () =>
 });
 
 test("customer can be created and searched by phone", async () => {
-  const token = await login("sales@electrostore.local");
+  const token = await login("sales@electrostore.manager");
 
   await request(app)
     .post("/api/customers")
@@ -79,7 +79,7 @@ test("customer can be created and searched by phone", async () => {
 });
 
 test("warehouse import increases stock, export decreases stock, and export blocks insufficient stock", async () => {
-  const token = await login("warehouse@electrostore.local");
+  const token = await login("warehouse@electrostore.manager");
 
   await request(app)
     .post("/api/warehouse/import")
@@ -107,7 +107,7 @@ test("warehouse import increases stock, export decreases stock, and export block
 });
 
 test("POS sale creates invoice, invoice items, stock movement, stock decrement, points, and reports", async () => {
-  const token = await login("sales@electrostore.local");
+  const token = await login("sales@electrostore.manager");
 
   const sale = await request(app)
     .post("/api/invoices/sale")
@@ -134,7 +134,7 @@ test("POS sale creates invoice, invoice items, stock movement, stock decrement, 
   const movements = await request(app).get("/api/inventory/1/movements").set("Authorization", `Bearer ${token}`).expect(200);
   assert.ok(movements.body.data.some((movement) => movement.reason === "sale"));
 
-  const managerToken = await login("manager@electrostore.local");
+  const managerToken = await login("manager@electrostore.manager");
   const revenue = await request(app).get("/api/reports/revenue").set("Authorization", `Bearer ${managerToken}`).expect(200);
   assert.ok(revenue.body.data.invoice_count >= 1);
   assert.ok(revenue.body.data.revenue > 0);

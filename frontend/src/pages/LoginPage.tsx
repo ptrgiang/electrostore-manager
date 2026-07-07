@@ -13,7 +13,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState("manager@electrostore.local");
+  const [email, setEmail] = useState("manager@electrostore.manager");
   const [password, setPassword] = useState("Password123!");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

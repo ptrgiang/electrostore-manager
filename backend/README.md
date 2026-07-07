@@ -13,9 +13,9 @@ npm run dev
 
 Seed users:
 
-- `manager@electrostore.local`
-- `sales@electrostore.local`
-- `warehouse@electrostore.local`
+- `manager@electrostore.manager`
+- `sales@electrostore.manager`
+- `warehouse@electrostore.manager`
 
 Password for all demo users: `Password123!`
 

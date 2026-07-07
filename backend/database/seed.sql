@@ -2,11 +2,11 @@
 -- All users use password: Password123!
 
 INSERT INTO employees (id, full_name, phone, email, role, password_hash) VALUES
-(1, 'Store Manager', '0900000001', 'manager@electrostore.local', 'manager', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
-(2, 'Sales Associate', '0900000002', 'sales@electrostore.local', 'salesperson', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
-(3, 'Warehouse Staff', '0900000003', 'warehouse@electrostore.local', 'warehouse_staff', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
-(4, 'POS Cashier', '0900000004', 'cashier@electrostore.local', 'salesperson', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
-(5, 'Inventory Clerk', '0900000005', 'inventory@electrostore.local', 'warehouse_staff', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi');
+(1, 'Store Manager', '0900000001', 'manager@electrostore.manager', 'manager', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
+(2, 'Sales Associate', '0900000002', 'sales@electrostore.manager', 'salesperson', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
+(3, 'Warehouse Staff', '0900000003', 'warehouse@electrostore.manager', 'warehouse_staff', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
+(4, 'POS Cashier', '0900000004', 'cashier@electrostore.manager', 'salesperson', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi'),
+(5, 'Inventory Clerk', '0900000005', 'inventory@electrostore.manager', 'warehouse_staff', '$2a$10$YAhY0vPAkio1fiwgCs3bfuxiXymdIzcFwKzlZerwLpzuMxYGPSyYi');
 
 INSERT INTO products
   (id, sku, name, category, supplier_name, supplier_contact, specs, cost_price, selling_price, warranty_months, min_stock_qty, is_active, created_at, updated_at)

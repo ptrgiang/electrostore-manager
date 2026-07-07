@@ -26,9 +26,9 @@ npm run dev:frontend
 
 Demo credentials:
 
-- Manager: `manager@electrostore.local`
-- Salesperson: `sales@electrostore.local`
-- Warehouse staff: `warehouse@electrostore.local`
+- Manager: `manager@electrostore.manager`
+- Salesperson: `sales@electrostore.manager`
+- Warehouse staff: `warehouse@electrostore.manager`
 
 Password for all demo users: `Password123!`
 
